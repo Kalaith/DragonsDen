@@ -1,0 +1,52 @@
+[
+  {
+    "id": "first_click",
+    "name": "First Click",
+    "description": "Make your first click to collect gold."
+  },
+  {
+    "id": "treasure_hunter",
+    "name": "Treasure Hunter",
+    "description": "Discover your first treasure."
+  },
+  {
+    "id": "upgrade_master",
+    "name": "Upgrade Master",
+    "description": "Purchase your first upgrade."
+  },
+  {
+    "id": "minion_mogul",
+    "name": "Minion Mogul",
+    "description": "Send your first minion to collect gold."
+  },
+  {
+    "id": "prestige_legend",
+    "name": "Prestige Legend",
+    "description": "Prestige for the first time."
+  },
+  {
+    "id": "achievement_unlocked",
+    "name": "Achievement Unlocked",
+    "description": "Unlock 10 achievements."
+  },
+  {
+    "id": "golden_collector",
+    "name": "Golden Collector",
+    "description": "Collect a total of 10,000 gold."
+  },
+  {
+    "id": "treasure_hoarder",
+    "name": "Treasure Hoarder",
+    "description": "Collect all types of treasures."
+  },
+  {
+    "id": "minion_master",
+    "name": "Minion Master",
+    "description": "Have 10 minions working for you."
+  },
+  {
+    "id": "prestige_pro",
+    "name": "Prestige Pro",
+    "description": "Prestige 5 times."
+  }
+]
