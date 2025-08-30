@@ -17,18 +17,8 @@ class PlayerController
 
     public static function collectGold(Request $request, Response $response): Response
     {
-        $body = (string)$request->getBody();
-        $data = json_decode($body, true);
-        if (!isset($data['amount'])) {
-            $response->getBody()->write(json_encode(['error' => 'Missing required amount parameter']));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-        }
-        $amount = $data['amount'];
-        if (!is_numeric($amount) || $amount <= 0) {
-            $response->getBody()->write(json_encode(['error' => 'Invalid amount - must be positive']));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-        }
-        $result = PlayerActions::collectGold($amount);
+        // Server determines the gold amount to prevent cheating
+        $result = PlayerActions::collectGold();
         $response->getBody()->write(json_encode($result));
         return $response->withHeader('Content-Type', 'application/json');
     }

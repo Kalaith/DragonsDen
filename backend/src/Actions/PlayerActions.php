@@ -37,6 +37,9 @@ class PlayerActions
 
     public static function getPlayerData()
     {
+        // Process any idle earnings first
+        self::processIdleEarnings();
+        
         $state = self::getPlayerState();
         $gold = new IdleNumber($state->gold_value, $state->gold_exp);
         $goblins = new IdleNumber($state->goblins_value, $state->goblins_exp);
@@ -51,18 +54,53 @@ class PlayerActions
             'goblins_display' => $goblins->toDisplay(),
             'achievements' => $achievements->toArray(),
             'treasures' => $treasures->toArray(),
-            'last_updated' => $state->updated_at
+            'last_updated' => $state->updated_at,
+            'server_time' => time()
         ];
     }
 
-    public static function collectGold($amount = 1)
+    public static function processIdleEarnings()
     {
+        $state = self::getPlayerState();
+        $lastUpdated = strtotime($state->updated_at ?? 'now');
+        $now = time();
+        $secondsOffline = $now - $lastUpdated;
+        
+        if ($secondsOffline > 0) {
+            $gold = new IdleNumber($state->gold_value, $state->gold_exp);
+            $goblins = new IdleNumber($state->goblins_value, $state->goblins_exp);
+            
+            // Base gold per second (1 gold/sec)
+            $goldPerSecond = new IdleNumber(1, 0);
+            
+            // Additional gold from goblins (each goblin adds 0.1 gold/sec)
+            if ($goblins->value > 0) {
+                $goblinGoldPerSecond = $goblins->mul(new IdleNumber(0.1, 0));
+                $goldPerSecond = $goldPerSecond->add($goblinGoldPerSecond);
+            }
+            
+            // Calculate total idle earnings
+            $idleEarnings = $goldPerSecond->mul(new IdleNumber($secondsOffline, 0));
+            $gold = $gold->add($idleEarnings);
+            
+            // Update state
+            self::updatePlayerState($gold, $goblins);
+        }
+    }
+
+    public static function collectGold($amount = null)
+    {
+        // Process idle earnings first
+        self::processIdleEarnings();
+        
         $state = self::getPlayerState();
         $gold = new IdleNumber($state->gold_value, $state->gold_exp);
         $goblins = new IdleNumber($state->goblins_value, $state->goblins_exp);
         
-        // Add gold
-        $goldToAdd = new IdleNumber($amount, 0);
+        // Server determines click value, not client (prevent cheating)
+        $baseGoldPerClick = 1;
+        $goldToAdd = new IdleNumber($baseGoldPerClick, 0);
+        
         $gold = $gold->add($goldToAdd);
         
         self::updatePlayerState($gold, $goblins);

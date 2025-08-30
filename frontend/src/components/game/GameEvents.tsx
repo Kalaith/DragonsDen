@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../../stores/gameStore';
-import ApiClient from '../../api/ApiClient';
+import { apiClient } from '../../api';
 
 interface GameEvent {
   id: string;
@@ -9,22 +9,16 @@ interface GameEvent {
   timestamp: number;
 }
 
-const apiClient = new ApiClient('/api');
-
 export const GameEvents: React.FC = () => {
   const [events, setEvents] = useState<GameEvent[]>([]);
   const { gold, totalTreasures, achievements, minions } = useGameStore();
 
-  // Track game state changes and create events
-  useEffect(() => {
-    const addEvent = async (message: string, type: GameEvent['type']) => {
-      try {
-        const eventData = await apiClient.getPlayerData('playerId');
-        console.log('Fetched player data:', eventData);
-      } catch (error) {
-        console.error('Error fetching player data:', error);
-      }
+  // Track significant game state changes and create events
+  const [lastGoldMilestone, setLastGoldMilestone] = useState(0);
+  const [lastTreasureCount, setLastTreasureCount] = useState(0);
 
+  useEffect(() => {
+    const addEvent = (message: string, type: GameEvent['type']) => {
       const newEvent: GameEvent = {
         id: Date.now().toString(),
         message,
@@ -35,11 +29,18 @@ export const GameEvents: React.FC = () => {
       setEvents(prev => [newEvent, ...prev.slice(0, 4)]); // Keep only last 5 events
     };
 
-    // This is a simplified event tracking - in a real game you'd want more sophisticated tracking
-    if (gold > 0) {
-      addEvent('Gold milestone reached!', 'gold');
+    // Only trigger events for significant milestones, not every change
+    const goldMilestone = Math.floor(gold / 1000) * 1000;
+    if (goldMilestone > lastGoldMilestone && goldMilestone > 0) {
+      addEvent(`Reached ${goldMilestone} gold!`, 'gold');
+      setLastGoldMilestone(goldMilestone);
     }
-  }, [gold, totalTreasures, achievements, minions]);
+
+    if (totalTreasures > lastTreasureCount) {
+      addEvent(`Found treasure! Total: ${totalTreasures}`, 'treasure');
+      setLastTreasureCount(totalTreasures);
+    }
+  }, [gold, totalTreasures, lastGoldMilestone, lastTreasureCount]);
 
   const getEventIcon = (type: GameEvent['type']) => {
     switch (type) {

@@ -398,7 +398,7 @@ function Main {
         
         if ($success) {
             # Copy root .htaccess file for URL rewriting
-            $rootHtaccessSrc = "$SOURCE_DIR\.htaccess"
+            $rootHtaccessSrc = "$PSScriptRoot\.htaccess"
             $rootHtaccessDest = "$DEST_DIR\.htaccess"
             if (Test-Path $rootHtaccessSrc) {
                 Copy-Item $rootHtaccessSrc $rootHtaccessDest -Force

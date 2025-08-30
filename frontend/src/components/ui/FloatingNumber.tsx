@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ApiClient from '../../api/ApiClient';
+import { apiClient } from '../../api';
 
 interface FloatingNumberProps {
   value: number;
@@ -16,19 +16,8 @@ export const FloatingNumber: React.FC<FloatingNumberProps> = ({
   onComplete 
 }) => {
   const [isVisible, setIsVisible] = useState(true);
-  const apiClient = new ApiClient('/api');
 
   useEffect(() => {
-    const fetchEventData = async () => {
-      try {
-        const eventData = await apiClient.getAchievements();
-        console.log('Fetched event data:', eventData);
-      } catch (error) {
-        console.error('Error fetching event data:', error);
-      }
-    };
-    fetchEventData();
-
     const timer = setTimeout(() => {
       setIsVisible(false);
       onComplete?.();

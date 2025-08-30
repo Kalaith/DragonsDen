@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer run:*)",
+      "Bash(.publish.ps1 -Verbose)",
+      "Bash(powershell:*)",
+      "Bash(.publish.ps1 -All -Verbose)",
+      "Read(H:\\xampp\\apache\\logs/**)",
+      "Read(H:\\xampp\\htdocs\\dragons_den\\backend/**)",
+      "Read(H:\\xampp\\apache\\logs/**)",
+      "Bash(php:*)",
+      "Bash(curl -s -X POST \"http://127.0.0.1/dragons_den/api/player/explore-ruins\" -H \"Content-Type: application/json\" -d '{}')"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

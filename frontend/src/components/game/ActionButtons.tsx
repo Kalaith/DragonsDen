@@ -31,11 +31,13 @@ export const ActionButtons: React.FC = () => {
           onClick={handleCollectGold}
           variant="primary"
         >
-          <span className="block text-center">
-            <span className="block text-lg lg:text-xl mb-1">🐉</span>
-            <span className="block text-xs lg:text-sm">Collect Gold</span>
-            <span className="block text-xs lg:text-sm font-bold">(+{goldPerClick})</span>
-          </span>
+          <div className="text-center">
+            <div className="text-xl lg:text-2xl mb-1">🐉</div>
+            <div className="text-xs lg:text-sm leading-tight">
+              <div>Collect Gold</div>
+              <div className="font-bold">(+{goldPerClick})</div>
+            </div>
+          </div>
         </ActionButton>
         
         <ActionButton
@@ -44,11 +46,13 @@ export const ActionButtons: React.FC = () => {
           variant="danger"
           cooldownTime={minionCooldown}
         >
-          <span className="block text-center">
-            <span className="block text-lg lg:text-xl mb-1">👹</span>
-            <span className="block text-xs lg:text-sm">Send Minions</span>
-            <span className="block text-xs lg:text-sm font-bold">({minions})</span>
-          </span>
+          <div className="text-center">
+            <div className="text-xl lg:text-2xl mb-1">👹</div>
+            <div className="text-xs lg:text-sm leading-tight">
+              <div>Send Minions</div>
+              <div className="font-bold">({minions})</div>
+            </div>
+          </div>
         </ActionButton>
         
         <ActionButton
@@ -57,11 +61,12 @@ export const ActionButtons: React.FC = () => {
           variant="secondary"
           cooldownTime={exploreCooldown}
         >
-          <span className="block text-center">
-            <span className="block text-lg lg:text-xl mb-1">🗺️</span>
-            <span className="block text-xs lg:text-sm">Explore</span>
-            <span className="block text-xs lg:text-sm">Ruins</span>
-          </span>
+          <div className="text-center">
+            <div className="text-xl lg:text-2xl mb-1">🗺️</div>
+            <div className="text-xs lg:text-sm leading-tight">
+              <div>Explore Ruins</div>
+            </div>
+          </div>
         </ActionButton>
         
         <ActionButton
@@ -69,11 +74,13 @@ export const ActionButtons: React.FC = () => {
           disabled={!canHireMinion}
           variant="success"
         >
-          <span className="block text-center">
-            <span className="block text-lg lg:text-xl mb-1">🏰</span>
-            <span className="block text-xs lg:text-sm">Hire Minion</span>
-            <span className="block text-xs lg:text-sm font-bold">({formatNumber(hireMinionCost)})</span>
-          </span>
+          <div className="text-center">
+            <div className="text-xl lg:text-2xl mb-1">🏰</div>
+            <div className="text-xs lg:text-sm leading-tight">
+              <div>Hire Minion</div>
+              <div className="font-bold">({formatNumber(hireMinionCost)})</div>
+            </div>
+          </div>
         </ActionButton>
       </div>
 

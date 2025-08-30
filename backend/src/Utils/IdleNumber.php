@@ -45,7 +45,13 @@ class IdleNumber
 
     public function mul($factor): self
     {
-        $result = new self($this->value * $factor, $this->exp);
+        if ($factor instanceof IdleNumber) {
+            // Multiply two IdleNumber objects
+            $result = new self($this->value * $factor->value, $this->exp + $factor->exp);
+        } else {
+            // Multiply by a numeric value
+            $result = new self($this->value * $factor, $this->exp);
+        }
         $result->normalize();
         return $result;
     }
