@@ -22,8 +22,8 @@
 15. **Aerial Combat System**: Three-dimensional combat with altitude advantages and aerial maneuvers
 
 ## Technical & Social Features
-16. **Guild System**: Player guilds with shared territories, dragon trading, and cooperative raids
+16. **AI Guild System**: NPC guilds with territories to conquer and resources to claim through strategic battles
 17. **Achievement System**: Comprehensive achievements with rare rewards and cosmetic unlocks
-18. **Dragon Showcase**: Gallery system to display prized dragons with community voting and rankings
-19. **Mobile Companion**: Mobile app for managing dragons and collecting offline rewards
-20. **Cloud Save**: Cross-platform save synchronization with backup and restore functionality
+18. **Dragon Gallery**: Personal collection showcase with detailed stats, breeding history, and achievements
+19. **Progressive Web App**: Mobile-responsive design for dragon management and offline reward collection
+20. **Local Data Management**: Export/import save files with comprehensive backup and restore options
