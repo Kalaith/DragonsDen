@@ -1,4 +1,5 @@
-import { API_CONFIG, getApiUrl, buildEndpoint } from '../config/api';
+import { API_CONFIG } from '../config/api';
+import { useAuthStore } from '../stores/authStore';
 
 export default class ApiClient {
   private baseUrl: string;
@@ -14,6 +15,9 @@ export default class ApiClient {
       console.log(`API Request: ${options.method || 'GET'} ${url}`);
     }
 
+    const authToken = useAuthStore.getState().token;
+    const authHeader = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+
     // Add timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.DEFAULT_TIMEOUT);
@@ -24,6 +28,7 @@ export default class ApiClient {
         signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
+          ...authHeader,
           ...options.headers,
         },
       });
@@ -31,6 +36,16 @@ export default class ApiClient {
       clearTimeout(timeoutId);
       
       if (!response.ok) {
+        if (response.status === 401) {
+          let loginUrl: string | null = null;
+          try {
+            const data = await response.json();
+            loginUrl = data?.login_url ?? data?.data?.login_url ?? null;
+          } catch {
+            // ignore JSON parse errors for 401
+          }
+          throw new Error('Not logged in');
+        }
         throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
       }
       
@@ -100,5 +115,9 @@ export default class ApiClient {
 
   public async getSystemStatus(): Promise<any> {
     return this.fetch(API_CONFIG.ENDPOINTS.SYSTEM_STATUS);
+  }
+
+  public async getAuthSession(): Promise<any> {
+    return this.fetch('/api/auth/session');
   }
 }

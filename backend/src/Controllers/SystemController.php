@@ -2,8 +2,8 @@
 // src/Controllers/SystemController.php
 namespace App\Controllers;
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Http\Response;
+use App\Http\Request;
 
 class SystemController
 {
@@ -28,6 +28,8 @@ class SystemController
                 '/api/upgrades/{id}',
                 '/api/upgrade-definitions',
                 '/api/upgrade-definitions/{id}',
+                // Auth
+                '/api/auth/session',
                 // Player Actions
                 '/api/player',
                 '/api/player/collect-gold',

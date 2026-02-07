@@ -2,8 +2,8 @@
 // src/Controllers/PlayerController.php
 namespace App\Controllers;
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Http\Response;
+use App\Http\Request;
 use App\Actions\PlayerActions;
 
 class PlayerController
@@ -34,8 +34,7 @@ class PlayerController
     public static function exploreRuins(Request $request, Response $response): Response
     {
         // Parse input
-        $body = (string)$request->getBody();
-        $data = json_decode($body, true);
+        $data = $request->getParsedBody();
         $ruinId = $data['ruin_id'] ?? null;
         $explorationType = $data['exploration_type'] ?? null;
 

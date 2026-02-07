@@ -82,7 +82,7 @@ export const ServerResourceCounter: React.FC = () => {
       </div>
 
       {/* Error Display */}
-      {error && (
+      {error && error !== 'Not logged in' && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}

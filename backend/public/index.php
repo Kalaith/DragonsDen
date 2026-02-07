@@ -1,14 +1,52 @@
 <?php
-// public/index.php
-require __DIR__ . '/../vendor/autoload.php';
 
-use Slim\Factory\AppFactory;
-use DI\Container;
+// Local autoloader for deployed API src (avoid central autoload mapping collisions)
+spl_autoload_register(function (string $class): void {
+    $prefix = 'App\\';
+    $baseDir = __DIR__ . '/../src/';
+    if (strncmp($class, $prefix, strlen($prefix)) !== 0) {
+        return;
+    }
+    $relative = substr($class, strlen($prefix));
+    $file = $baseDir . str_replace('\\', '/', $relative) . '.php';
+    if (file_exists($file)) {
+        require $file;
+    }
+});
+
+$autoloader = null;
+$searchPaths = [
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../vendor/autoload.php',
+    __DIR__ . '/../../../vendor/autoload.php',
+    __DIR__ . '/../../../../vendor/autoload.php',
+    __DIR__ . '/../../../../../vendor/autoload.php'
+];
+
+foreach ($searchPaths as $path) {
+    if (file_exists($path)) {
+        $autoloader = $path;
+        break;
+    }
+}
+
+if (!$autoloader) {
+    throw new \RuntimeException('Autoloader not found. Please run composer install.');
+}
+
+$loader = require $autoloader;
+$loader->addPsr4('App\\', __DIR__ . '/../src/', true);
+
 use Dotenv\Dotenv;
+use App\Core\Router;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
-// Load environment variables
-$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+// Load environment variables first
+$dotenvPath = __DIR__ . '/..';
+if (!file_exists($dotenvPath . '/.env')) {
+    throw new \RuntimeException('Missing .env at ' . $dotenvPath . '/.env');
+}
+$dotenv = Dotenv::createImmutable($dotenvPath);
 $dotenv->load();
 
 // Initialize database connection
@@ -27,41 +65,41 @@ $capsule->addConnection([
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
-$container = new Container();
-AppFactory::setContainer($container);
-$app = AppFactory::create();
+// Router (Blacksmith Forge pattern)
+$router = new Router();
 
-// Set the base path for proper routing when accessed via rewrite rules
-$app->setBasePath('/dragons_den');
+// Set base path for subdirectory deployment
+if (isset($_ENV['APP_BASE_PATH']) && $_ENV['APP_BASE_PATH']) {
+    $router->setBasePath(rtrim($_ENV['APP_BASE_PATH'], '/'));
+} else {
+    $requestPath = $_SERVER['REQUEST_URI'] ?? '';
+    $requestPath = parse_url($requestPath, PHP_URL_PATH) ?? '';
+    $apiPos = strpos($requestPath, '/api');
+    if ($apiPos !== false) {
+        $basePath = substr($requestPath, 0, $apiPos);
+        if ($basePath !== '') {
+            $router->setBasePath($basePath);
+        }
+    } elseif (isset($_SERVER['SCRIPT_NAME'])) {
+        $scriptName = $_SERVER['SCRIPT_NAME'];
+        $basePath = str_replace('/public/index.php', '', $scriptName);
+        if ($basePath !== $scriptName && $basePath !== '') {
+            $router->setBasePath($basePath);
+        }
+    }
+}
 
-// Middleware (CORS, error handling, etc.)
-$app->addBodyParsingMiddleware();
-$app->addRoutingMiddleware();
+// Handle CORS preflight
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Headers: Content-Type, Accept, Origin, Authorization');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    http_response_code(200);
+    exit;
+}
 
-// CORS Middleware
-$app->add(function ($request, $handler) {
-    $response = $handler->handle($request);
-    return $response
-        ->withHeader('Access-Control-Allow-Origin', $_ENV['CORS_ALLOWED_ORIGINS'] ?? '*')
-        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
-        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-});
+// Load routes
+(require __DIR__ . '/../src/Routes/router.php')($router);
 
-// Error Middleware
-$errorMiddleware = $app->addErrorMiddleware(true, true, true);
-
-// Debug: Log the request URI (commented out for production)
-// error_log("Request URI: " . ($_SERVER['REQUEST_URI'] ?? 'Not set'));
-// error_log("Script name: " . ($_SERVER['SCRIPT_NAME'] ?? 'Not set'));
-// error_log("Path info: " . ($_SERVER['PATH_INFO'] ?? 'Not set'));
-
-// Register routes
-(require __DIR__ . '/../src/Routes/api.php')($app);
-
-// Add a simple test route
-$app->get('/test', function ($request, $response) {
-    $response->getBody()->write('Test route works!');
-    return $response;
-});
-
-$app->run();
+// Run router
+$router->handle();

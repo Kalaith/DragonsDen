@@ -2,8 +2,8 @@
 // src/Controllers/GameDataController.php
 namespace App\Controllers;
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Http\Response;
+use App\Http\Request;
 use App\Actions\GameDataActions;
 
 class GameDataController
