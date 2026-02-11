@@ -1,5 +1,4 @@
 import { Header } from '../components/layout/Header';
-import { GameBoard } from '../components/layout/GameBoard';
 import { Sidebar } from '../components/layout/Sidebar';
 import { ApiStatus } from '../components/debug/ApiStatus';
 import { ServerResourceCounter } from '../components/game/ServerResourceCounter';

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { apiClient } from '../../api';
 
 interface StatDisplayProps {
   icon: string;
@@ -31,7 +30,7 @@ export const StatDisplay: React.FC<StatDisplayProps> = ({
       }
       setPreviousValue(value);
     }
-  }, [value, showChange]); // Removed previousValue from dependencies to prevent infinite loop
+  }, [value, showChange, previousValue]);
 
   return (
     <motion.div 

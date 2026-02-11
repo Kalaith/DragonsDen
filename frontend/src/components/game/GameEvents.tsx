@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../../stores/gameStore';
-import { apiClient } from '../../api';
 
 interface GameEvent {
   id: string;
@@ -11,7 +10,7 @@ interface GameEvent {
 
 export const GameEvents: React.FC = () => {
   const [events, setEvents] = useState<GameEvent[]>([]);
-  const { gold, totalTreasures, achievements, minions } = useGameStore();
+  const { gold, totalTreasures, achievements } = useGameStore();
 
   // Track significant game state changes and create events
   const [lastGoldMilestone, setLastGoldMilestone] = useState(0);

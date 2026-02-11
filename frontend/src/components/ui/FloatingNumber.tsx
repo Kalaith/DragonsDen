@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { apiClient } from '../../api';
 
 interface FloatingNumberProps {
   value: number;
@@ -45,16 +44,10 @@ export const FloatingNumber: React.FC<FloatingNumberProps> = ({
             duration: 2, 
             ease: "easeOut" 
           }}
-          className="floating-number"
+          className="fixed pointer-events-none z-50 text-lg font-bold text-emerald-500"
           style={{
-            position: 'fixed',
             left: x,
             top: y,
-            pointerEvents: 'none',
-            zIndex: 1000,
-            fontSize: '1.2rem',
-            fontWeight: 'bold',
-            color: '#10B981'
           }}
         >
           +{value}
