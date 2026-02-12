@@ -87,7 +87,7 @@ export const useServerGameStore = create<ServerGameStore>()(
             lastServerSync: Date.now(),
             isLoading: false 
           });
-        } catch (error) {
+        } catch {
           console.error('Server sync failed:', error);
           set({ 
             error: error instanceof Error ? error.message : 'Sync failed',
@@ -146,7 +146,7 @@ export const useServerGameStore = create<ServerGameStore>()(
           } else {
             throw new Error('Server rejected gold collection');
           }
-        } catch (error) {
+        } catch {
           // Revert optimistic update
           set((state) => ({
             optimisticGold: Math.max(0, state.optimisticGold - 1),
@@ -275,7 +275,7 @@ export const useServerGameStore = create<ServerGameStore>()(
             // Trigger sync to get updated treasures
             await get().syncWithServer();
           }
-        } catch (error) {
+        } catch {
           set((state) => ({
             error: 'Failed to explore ruins',
             pendingActions: state.pendingActions.filter(a => a.id !== actionId)

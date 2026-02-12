@@ -1,4 +1,4 @@
-import { AncientRuin, RuinFloor, RuinChallenge } from '../types/world';
+import { AncientRuin, RuinChallenge } from '../types/world';
 import { Dragon } from '../types/dragons';
 
 export type PuzzleType = 
@@ -635,6 +635,7 @@ export class RuinsExplorationSystem {
   }
   
   private static generateTrap(difficulty: number): TrapConfiguration {
+    void difficulty;
     const trapTypes = Object.keys(TRAP_CONFIGURATIONS) as TrapType[];
     const randomType = trapTypes[Math.floor(Math.random() * trapTypes.length)];
     const traps = TRAP_CONFIGURATIONS[randomType];

@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Dragon, DragonAge, DragonPersonality, ElementType, BreedingPair } from '../types/dragons';
+import { Dragon, BreedingPair } from '../types/dragons';
 import { WorldLocation, WeatherSystem, RivalDragonLord } from '../types/world';
 import { AchievementSystem } from '../systems/achievementSystem';
 import { WeatherSystemManager } from '../systems/weatherSystem';
 import { WorldGenerator } from '../systems/worldGeneration';
 import { DragonAgingSystem } from '../systems/dragonAging';
 import { RuinsExplorationSystem } from '../systems/ruinsExploration';
-import { DRAGON_PERSONALITIES, calculateBondingGain, getBondingDecayRate } from '../data/dragonPersonalities';
+import { getBondingDecayRate } from '../data/dragonPersonalities';
 
 interface DragonGameState {
   // Dragons
@@ -218,6 +218,7 @@ export const useDragonStore = create<DragonStore>()(
       performBondingActivity: (dragonId: string, activityId: string) => {
         const state = get();
         const dragon = state.getDragon(dragonId);
+        void activityId;
         
         if (!dragon) return false;
         
@@ -401,8 +402,8 @@ export const useDragonStore = create<DragonStore>()(
       // Combat & Encounters  
       engageCombat: (enemies: any[], formation?: any) => {
         // Placeholder for combat system
-        const state = get();
-        const dragons = state.getActiveDragons();
+        void enemies;
+        void formation;
         
         const victory = Math.random() < 0.6; // 60% win rate placeholder
         
@@ -420,6 +421,7 @@ export const useDragonStore = create<DragonStore>()(
       
       encounterRivalLord: (rivalId: string) => {
         // Placeholder for rival encounters
+        void rivalId;
         return { type: 'greeting', message: 'A rival dragon lord approaches...' };
       },
       

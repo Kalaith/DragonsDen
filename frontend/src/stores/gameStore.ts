@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { GameState } from '../types/game';
 import { Treasure } from '../types/treasures';
-import { Upgrade } from '../types/upgrades';
 import { GAME_CONSTANTS } from '../constants/gameConstants';
 
 interface GameStore extends GameState {

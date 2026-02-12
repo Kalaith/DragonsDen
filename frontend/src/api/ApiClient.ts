@@ -37,10 +37,8 @@ export default class ApiClient {
       
       if (!response.ok) {
         if (response.status === 401) {
-          let loginUrl: string | null = null;
           try {
-            const data = await response.json();
-            loginUrl = data?.login_url ?? data?.data?.login_url ?? null;
+            await response.json();
           } catch {
             // ignore JSON parse errors for 401
           }

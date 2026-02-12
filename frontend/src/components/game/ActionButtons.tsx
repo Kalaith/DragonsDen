@@ -87,7 +87,6 @@ export const ActionButtons: React.FC = () => {
       {/* Prestige Section */}
       <PrestigeCard
         canPrestige={canPrestige}
-        currentLevel={prestigeLevel}
         nextLevel={prestigeLevel + 1}
         onPrestige={handlePrestige}
       />

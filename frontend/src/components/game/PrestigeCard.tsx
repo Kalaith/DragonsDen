@@ -2,14 +2,12 @@ import React from 'react';
 
 interface PrestigeCardProps {
   canPrestige: boolean;
-  currentLevel: number;
   nextLevel: number;
   onPrestige: () => void;
 }
 
 export const PrestigeCard: React.FC<PrestigeCardProps> = ({
   canPrestige,
-  currentLevel,
   nextLevel,
   onPrestige
 }) => {

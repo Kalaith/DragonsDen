@@ -498,6 +498,7 @@ export class AchievementSystem {
   }
   
   private checkUnlockConditions(achievement: Achievement, gameState: any): boolean {
+    void gameState;
     // Check prerequisites
     if (achievement.prerequisiteAchievements) {
       for (const prereq of achievement.prerequisiteAchievements) {
@@ -648,6 +649,7 @@ export class AchievementSystem {
   
   // Manual achievement triggering for special cases
   triggerSpecialAchievement(id: string, gameState: any): boolean {
+    void gameState;
     const achievement = this.achievements.get(id);
     if (!achievement || achievement.isCompleted) {
       return false;

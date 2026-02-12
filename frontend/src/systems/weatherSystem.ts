@@ -348,6 +348,7 @@ export class WeatherSystemManager {
   }
   
   getWeatherForecast(biome?: BiomeType, hoursAhead = 12): Array<{ weather: WeatherType; probability: number }> {
+    void hoursAhead;
     // Simple forecast system based on current conditions and patterns
     const patterns = biome ? BIOME_WEATHER_PATTERNS[biome] : {
       common: ['clear', 'rain', 'fog'],

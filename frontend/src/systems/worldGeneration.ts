@@ -208,6 +208,8 @@ export class WorldGenerator {
   }
   
   private generateResources(biome: BiomeType, difficulty: LocationDifficulty, height: number): any {
+    void difficulty;
+    void height;
     const biomeResources = {
       volcanic: {
         common: ['obsidian_shard', 'sulfur_crystal', 'lava_stone'],
@@ -311,6 +313,8 @@ export class WorldGenerator {
   }
   
   private generateEvents(biome: BiomeType, difficulty: LocationDifficulty): WorldEvent[] {
+    void biome;
+    void difficulty;
     // Generate random events based on biome characteristics
     return [];
   }
@@ -473,6 +477,7 @@ export class WorldGenerator {
   }
   
   private addLocationConnections(locations: WorldLocation[]): void {
+    void locations;
     // Add logical connections between locations for progression
     // This would implement pathfinding and ensure locations are reachable
   }
