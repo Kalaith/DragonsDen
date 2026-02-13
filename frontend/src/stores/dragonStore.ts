@@ -1,3 +1,4 @@
+
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Dragon, BreedingPair } from "../types/dragons";
@@ -670,7 +671,6 @@ export const useDragonStore = create<DragonStore>()(
           dragons: state.dragons,
           discoveredLocations: state.discoveredLocations,
           totalTreasures: state.stats.treasuresFound,
-          gold: 0, // Would come from main game store
         });
 
         if (newAchievements.length > 0) {

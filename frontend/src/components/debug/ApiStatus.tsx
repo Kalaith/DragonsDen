@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { apiClient } from "../../api";
 import { apiConfig } from "../../config/api";
@@ -89,13 +90,13 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
         )}
       </div>
 
-      {process.env.NODE_ENV === "development" && (
+      {import.meta.env.DEV && (
         <div className="mt-2 text-xs text-gray-600 border-t border-gray-200 pt-2">
           <p>
             <strong>Backend URL:</strong> {apiConfig.BACKEND_BASE_URL}
           </p>
           <p>
-            <strong>Environment:</strong> {process.env.NODE_ENV}
+            <strong>Environment:</strong> {import.meta.env.MODE}
           </p>
         </div>
       )}

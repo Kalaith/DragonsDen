@@ -1,3 +1,4 @@
+
 import { apiConfig } from "../config/api";
 import { useAuthStore } from "../stores/authStore";
 
@@ -21,9 +22,13 @@ export default class ApiClient {
     }
 
     const authToken = useAuthStore.getState().token;
-    const authHeader = authToken
+    const authHeader: Record<string, string> = authToken
       ? { Authorization: `Bearer ${authToken}` }
       : {};
+    const extraHeaders =
+      options.headers && !Array.isArray(options.headers)
+        ? (options.headers as Record<string, string>)
+        : {};
 
     // Add timeout
     const controller = new AbortController();
@@ -39,7 +44,7 @@ export default class ApiClient {
         headers: {
           "Content-Type": "application/json",
           ...authHeader,
-          ...options.headers,
+          ...extraHeaders,
         },
       });
 
@@ -72,65 +77,65 @@ export default class ApiClient {
     }
   }
 
-  public async getConstants(): Promise<unknown> {
+  public async getConstants(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.CONSTANTS);
   }
 
-  public async getAchievements(): Promise<unknown> {
+  public async getAchievements(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.ACHIEVEMENTS);
   }
 
-  public async getTreasures(): Promise<unknown> {
+  public async getTreasures(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.TREASURES);
   }
 
-  public async getUpgrades(): Promise<unknown> {
+  public async getUpgrades(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.UPGRADES);
   }
 
-  public async getUpgradeDefinitions(): Promise<unknown> {
+  public async getUpgradeDefinitions(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.UPGRADE_DEFINITIONS);
   }
 
-  public async getPlayerData(): Promise<unknown> {
+  public async getPlayerData(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.PLAYER);
   }
 
-  public async collectGold(): Promise<unknown> {
+  public async collectGold(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.PLAYER_COLLECT_GOLD, {
       method: "POST",
     });
   }
 
-  public async sendMinions(): Promise<unknown> {
+  public async sendMinions(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.PLAYER_SEND_MINIONS, {
       method: "POST",
     });
   }
 
-  public async exploreRuins(): Promise<unknown> {
+  public async exploreRuins(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.PLAYER_EXPLORE_RUINS, {
       method: "POST",
     });
   }
 
-  public async hireGoblin(): Promise<unknown> {
+  public async hireGoblin(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.PLAYER_HIRE_GOBLIN, {
       method: "POST",
     });
   }
 
-  public async prestigePlayer(): Promise<unknown> {
+  public async prestigePlayer(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.PLAYER_PRESTIGE, {
       method: "POST",
     });
   }
 
-  public async getSystemStatus(): Promise<unknown> {
+  public async getSystemStatus(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.SYSTEM_STATUS);
   }
 
-  public async getAuthSession(): Promise<unknown> {
+  public async getAuthSession(): Promise<any> {
     return this.fetchJson("/api/auth/session");
   }
 }

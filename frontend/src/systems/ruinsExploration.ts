@@ -1,3 +1,4 @@
+
 import { AncientRuin, RuinChallenge } from "../types/world";
 import { Dragon, type DragonStats, type ElementType } from "../types/dragons";
 
@@ -929,3 +930,4 @@ export class RuinsExplorationSystem {
     };
   }
 }
+

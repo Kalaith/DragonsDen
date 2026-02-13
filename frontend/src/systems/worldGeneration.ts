@@ -1,3 +1,4 @@
+
 import {
   WorldLocation,
   BiomeType,
@@ -587,7 +588,7 @@ class SeededRandom {
     return this.seed / 233280;
   }
 
-  choice<T>(array: T[]): T {
+  choice<T>(array: readonly T[]): T {
     return array[Math.floor(this.random() * array.length)];
   }
 }

@@ -35,6 +35,13 @@ export interface WeatherSystem {
     treasureChance: number; // Multiplier
     dragonMoodEffect: number; // Positive or negative
     elementalBonus?: { element: string; multiplier: number }[];
+    elementalBonuses?: { element: string; multiplier: number }[];
+    combatModifiers?: {
+      accuracy: number;
+      damage: number;
+      speed: number;
+    };
+    specialEffects?: string[];
   };
 }
 

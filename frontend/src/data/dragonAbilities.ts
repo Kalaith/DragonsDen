@@ -1,3 +1,4 @@
+
 import {
   DragonAbility,
   ElementType,
@@ -362,3 +363,4 @@ export function calculateAbilityDamage(
     baseDamage * attackModifier * magicModifier * levelModifier,
   );
 }
+

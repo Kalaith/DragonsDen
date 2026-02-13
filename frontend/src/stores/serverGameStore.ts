@@ -1,4 +1,4 @@
-import { create } from "zustand";
+
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { apiClient } from "../api";
@@ -71,7 +71,7 @@ interface ServerGameStore extends ServerGameState {
   clearError: () => void;
 }
 
-let optimisticInterval: NodeJS.Timeout | null = null;
+let optimisticInterval: ReturnType<typeof setInterval> | null = null;
 
 export const useServerGameStore = create<ServerGameStore>()(
   persist(

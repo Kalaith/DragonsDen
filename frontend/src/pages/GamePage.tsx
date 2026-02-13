@@ -1,3 +1,4 @@
+
 import { Header } from "../components/layout/Header";
 import { Sidebar } from "../components/layout/Sidebar";
 import { ApiStatus } from "../components/debug/ApiStatus";
@@ -15,7 +16,7 @@ export function GamePage() {
         <Sidebar />
         <div className="flex-1">
           {/* API Status - only show in development */}
-          {process.env.NODE_ENV === "development" && (
+          {import.meta.env.DEV && (
             <div className="p-4">
               <ApiStatus className="max-w-md" />
             </div>

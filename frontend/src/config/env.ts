@@ -1,3 +1,4 @@
+
 // Environment configuration for Dragons Den frontend
 interface EnvironmentConfig {
   apiBaseUrl: string;
@@ -41,3 +42,4 @@ export const getEnvVar = (key: string, defaultValue?: string): string => {
   }
   return value || defaultValue!;
 };
+

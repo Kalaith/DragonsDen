@@ -1,3 +1,4 @@
+
 // API Configuration for Dragons Den
 const getBackendUrl = () => {
   const url = import.meta.env.VITE_API_BASE_URL;
@@ -55,3 +56,4 @@ export function buildEndpoint(
   });
   return url;
 }
+

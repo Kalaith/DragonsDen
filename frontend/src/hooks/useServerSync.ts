@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from "react";
 import { useServerGameStore } from "../stores/serverGameStore";
 
@@ -10,7 +11,7 @@ export const useServerSync = () => {
     isLoading,
   } = useServerGameStore();
 
-  const syncIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const syncIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     // Initial sync on mount

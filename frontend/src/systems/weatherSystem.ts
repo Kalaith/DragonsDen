@@ -1,3 +1,4 @@
+
 import { WeatherSystem, WeatherType, BiomeType } from "../types/world";
 import { ElementType } from "../types/dragons";
 
@@ -269,9 +270,9 @@ export class WeatherSystemManager {
     const patterns = biome
       ? biomeWeatherPatterns[biome]
       : {
-          common: ["clear", "rain", "fog"],
-          rare: ["storm", "eclipse"],
-          impossible: [],
+          common: ["clear", "rain", "fog"] as WeatherType[],
+          rare: ["storm", "eclipse"] as WeatherType[],
+          impossible: [] as WeatherType[],
         };
 
     // Weather generation based on patterns and recent history
@@ -304,7 +305,8 @@ export class WeatherSystemManager {
 
     // Select new weather
     const newWeather =
-      possibleWeathers[Math.floor(Math.random() * possibleWeathers.length)];
+      possibleWeathers[Math.floor(Math.random() * possibleWeathers.length)] ??
+      "clear";
     const duration = this.calculateWeatherDuration(newWeather);
 
     // Update current weather
@@ -361,11 +363,11 @@ export class WeatherSystemManager {
   }
 
   getWeatherEffect<K extends keyof WeatherEffect>(stat: K): WeatherEffect[K] {
-    return this.currentWeather.effects[stat];
+    return this.currentWeather.effects[stat] as WeatherEffect[K];
   }
 
   getElementalModifier(element: ElementType): number {
-    const bonus = this.currentWeather.effects.elementalBonuses.find(
+    const bonus = (this.currentWeather.effects.elementalBonuses ?? []).find(
       (b) => b.element === element,
     );
     return bonus ? bonus.multiplier : 1.0;
@@ -378,11 +380,11 @@ export class WeatherSystemManager {
       case "exploration":
         return effects.explorationSpeed >= 0.7;
       case "flight":
-        return !effects.specialEffects.includes("flight_hazard");
+        return !(effects.specialEffects ?? []).includes("flight_hazard");
       case "treasure_hunting":
         return effects.treasureChance >= 0.8;
       case "combat":
-        return effects.combatModifiers.accuracy >= 0.8;
+        return (effects.combatModifiers?.accuracy ?? 1) >= 0.8;
       default:
         return true;
     }
@@ -405,9 +407,9 @@ export class WeatherSystemManager {
     const patterns = biome
       ? biomeWeatherPatterns[biome]
       : {
-          common: ["clear", "rain", "fog"],
-          rare: ["storm", "eclipse"],
-          impossible: [],
+          common: ["clear", "rain", "fog"] as WeatherType[],
+          rare: ["storm", "eclipse"] as WeatherType[],
+          impossible: [] as WeatherType[],
         };
 
     const forecast: Array<{ weather: WeatherType; probability: number }> = [];
@@ -456,7 +458,7 @@ export class WeatherSystemManager {
 
   // Static utility methods
   static getOptimalWeatherFor(activity: string): WeatherType[] {
-    const optimalWeathers = {
+    const optimalWeathers: Record<string, WeatherType[]> = {
       exploration: ["clear", "aurora"],
       combat: ["clear", "aurora"],
       treasure_hunting: ["fog", "eclipse", "aurora"],
@@ -472,7 +474,7 @@ export class WeatherSystemManager {
   }
 
   static getWorstWeatherFor(activity: string): WeatherType[] {
-    const worstWeathers = {
+    const worstWeathers: Record<string, WeatherType[]> = {
       exploration: ["blizzard", "sandstorm"],
       combat: ["blizzard", "fog"],
       flight: ["storm", "blizzard", "sandstorm"],

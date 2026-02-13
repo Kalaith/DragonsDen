@@ -1,10 +1,11 @@
+
 import { ElementalAdvantage, ElementType } from "../types/dragons";
 
 export const elementalAdvantages: Record<ElementType, ElementalAdvantage> = {
   fire: {
     element: "fire",
     strongAgainst: ["ice", "earth"],
-    weakAgainst: ["water", "air"],
+    weakAgainst: ["lightning", "air"],
     immuneTo: ["fire"],
   },
   ice: {

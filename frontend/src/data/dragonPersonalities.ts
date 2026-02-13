@@ -1,3 +1,4 @@
+
 import { DragonPersonality } from "../types/dragons";
 
 export interface PersonalityTraits {
@@ -445,3 +446,4 @@ export function getBondingDecayRate(
 
   return decayRate * personalityDecayModifiers[personality];
 }
+
