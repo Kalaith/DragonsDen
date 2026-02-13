@@ -1,4 +1,3 @@
-
 import { Dragon, DragonAge, DragonStats } from "../types/dragons";
 
 export interface AgeRequirements {
@@ -409,4 +408,3 @@ export class DragonAgingSystem {
     };
   }
 }
-

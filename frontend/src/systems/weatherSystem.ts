@@ -1,4 +1,3 @@
-
 import { WeatherSystem, WeatherType, BiomeType } from "../types/world";
 import { ElementType } from "../types/dragons";
 

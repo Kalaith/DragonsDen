@@ -1,4 +1,3 @@
-
 export type AchievementCategory =
   | "exploration"
   | "combat"
@@ -701,4 +700,3 @@ export interface AchievementGameState {
   totalTreasures?: number;
   dragons?: unknown[];
 }
-

@@ -1,4 +1,3 @@
-
 import { ElementalAdvantage, ElementType } from "../types/dragons";
 
 export const elementalAdvantages: Record<ElementType, ElementalAdvantage> = {
