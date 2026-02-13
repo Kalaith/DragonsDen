@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react';
-import { useGameStore } from '../stores/gameStore';
+import { useEffect, useRef } from "react";
+import { useGameStore } from "../stores/gameStore";
 
 export const useGameLoop = () => {
-  const gameLoop = useGameStore(state => state.gameLoop);
-  const updateCooldowns = useGameStore(state => state.updateCooldowns);
+  const gameLoop = useGameStore((state) => state.gameLoop);
+  const updateCooldowns = useGameStore((state) => state.updateCooldowns);
   const lastTimeRef = useRef<number>(Date.now());
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-export type TreasureRarity = 'common' | 'rare' | 'epic' | 'legendary';
+export type TreasureRarity = "common" | "rare" | "epic" | "legendary";
 
 export interface Treasure {
   name: string;

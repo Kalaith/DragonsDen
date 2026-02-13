@@ -1,6 +1,6 @@
-import React from 'react';
-import { ActionButton } from '../ui/ActionButton';
-import { useServerGameStore } from '../../stores/serverGameStore';
+import React from "react";
+import { ActionButton } from "../ui/ActionButton";
+import { useServerGameStore } from "../../stores/serverGameStore";
 
 export const ServerActionButtons: React.FC = () => {
   const {
@@ -12,13 +12,13 @@ export const ServerActionButtons: React.FC = () => {
     getDisplayGold,
     getDisplayGoblins,
     clearError,
-    isLoading
+    isLoading,
   } = useServerGameStore();
 
   const formatNumber = (num: number): string => {
-    if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
-    if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
-    if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+    if (num >= 1e9) return (num / 1e9).toFixed(1) + "B";
+    if (num >= 1e6) return (num / 1e6).toFixed(1) + "M";
+    if (num >= 1e3) return (num / 1e3).toFixed(1) + "K";
     return Math.floor(num).toFixed(0);
   };
 
@@ -43,7 +43,7 @@ export const ServerActionButtons: React.FC = () => {
     try {
       await action();
     } catch (error) {
-      console.error('Action failed:', error);
+      console.error("Action failed:", error);
     }
   };
 
@@ -64,7 +64,7 @@ export const ServerActionButtons: React.FC = () => {
             </div>
           </div>
         </ActionButton>
-        
+
         <ActionButton
           onClick={() => handleAction(sendMinions)}
           disabled={!canSendMinions() || isLoading}
@@ -78,7 +78,7 @@ export const ServerActionButtons: React.FC = () => {
             </div>
           </div>
         </ActionButton>
-        
+
         <ActionButton
           onClick={() => handleAction(exploreRuins)}
           disabled={isLoading}
@@ -91,7 +91,7 @@ export const ServerActionButtons: React.FC = () => {
             </div>
           </div>
         </ActionButton>
-        
+
         <ActionButton
           onClick={() => handleAction(hireGoblin)}
           disabled={!canHireGoblin() || isLoading}
@@ -101,7 +101,9 @@ export const ServerActionButtons: React.FC = () => {
             <div className="text-xl lg:text-2xl mb-1">🏰</div>
             <div className="text-xs lg:text-sm leading-tight">
               <div>Hire Goblin</div>
-              <div className="font-bold">({formatNumber(calculateGoblinCost())})</div>
+              <div className="font-bold">
+                ({formatNumber(calculateGoblinCost())})
+              </div>
             </div>
           </div>
         </ActionButton>
@@ -116,7 +118,7 @@ export const ServerActionButtons: React.FC = () => {
               Reset your progress for permanent bonuses
             </p>
           </div>
-          
+
           <ActionButton
             onClick={() => handleAction(prestige)}
             disabled={isLoading}

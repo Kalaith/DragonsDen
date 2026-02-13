@@ -1,9 +1,9 @@
-import React from 'react';
-import { ResourceCounter } from '../game/ResourceCounter';
-import { ActionButtons } from '../game/ActionButtons';
-import { TreasureCollection } from '../game/TreasureCollection';
-import { UpgradeShop } from '../game/UpgradeShop';
-import { GameEvents } from '../game/GameEvents';
+import React from "react";
+import { ResourceCounter } from "../game/ResourceCounter";
+import { ActionButtons } from "../game/ActionButtons";
+import { TreasureCollection } from "../game/TreasureCollection";
+import { UpgradeShop } from "../game/UpgradeShop";
+import { GameEvents } from "../game/GameEvents";
 
 export const GameBoard: React.FC = () => {
   return (
@@ -15,7 +15,7 @@ export const GameBoard: React.FC = () => {
           <ActionButtons />
           <GameEvents />
         </div>
-        
+
         {/* Right Column - Collections and Upgrades */}
         <div className="space-y-4 lg:space-y-6">
           <UpgradeShop />

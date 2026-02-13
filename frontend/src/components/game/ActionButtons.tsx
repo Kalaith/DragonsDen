@@ -1,7 +1,7 @@
-import React from 'react';
-import { ActionButton } from '../ui/ActionButton';
-import { PrestigeCard } from './PrestigeCard';
-import { useGameActions } from '../../hooks/useGameActions';
+import React from "react";
+import { ActionButton } from "../ui/ActionButton";
+import { PrestigeCard } from "./PrestigeCard";
+import { useGameActions } from "../../hooks/useGameActions";
 
 export const ActionButtons: React.FC = () => {
   const {
@@ -20,17 +20,14 @@ export const ActionButtons: React.FC = () => {
     canSendMinions,
     canExplore,
     canHireMinion,
-    formatNumber
+    formatNumber,
   } = useGameActions();
 
   return (
     <div className="space-y-4">
       {/* Main Action Buttons */}
       <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3 lg:gap-4 p-4 lg:p-6">
-        <ActionButton
-          onClick={handleCollectGold}
-          variant="primary"
-        >
+        <ActionButton onClick={handleCollectGold} variant="primary">
           <div className="text-center">
             <div className="text-xl lg:text-2xl mb-1">🐉</div>
             <div className="text-xs lg:text-sm leading-tight">
@@ -39,7 +36,7 @@ export const ActionButtons: React.FC = () => {
             </div>
           </div>
         </ActionButton>
-        
+
         <ActionButton
           onClick={handleSendMinions}
           disabled={!canSendMinions}
@@ -54,7 +51,7 @@ export const ActionButtons: React.FC = () => {
             </div>
           </div>
         </ActionButton>
-        
+
         <ActionButton
           onClick={handleExploreRuins}
           disabled={!canExplore}
@@ -68,7 +65,7 @@ export const ActionButtons: React.FC = () => {
             </div>
           </div>
         </ActionButton>
-        
+
         <ActionButton
           onClick={handleHireMinion}
           disabled={!canHireMinion}

@@ -1,4 +1,4 @@
-import { Treasure } from './treasures';
+import { Treasure } from "./treasures";
 
 export interface GameState {
   gold: number;

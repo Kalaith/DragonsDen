@@ -1,7 +1,7 @@
-import { useGameStore } from '../stores/gameStore';
+import { useGameStore } from "../stores/gameStore";
 
 export const useCooldowns = () => {
-  const cooldowns = useGameStore(state => state.cooldowns);
+  const cooldowns = useGameStore((state) => state.cooldowns);
 
   return {
     minionCooldown: cooldowns.minions,

@@ -10,7 +10,7 @@ export interface StatDisplayProps {
 export interface ActionButtonProps {
   onClick: () => void;
   disabled?: boolean;
-  variant: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
+  variant: "primary" | "secondary" | "success" | "warning" | "danger";
   children: React.ReactNode;
   cooldownTime?: number;
 }
@@ -43,7 +43,7 @@ export interface ModalProps {
 }
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "outline" | "danger";
+  size?: "sm" | "md" | "lg";
   children: React.ReactNode;
 }

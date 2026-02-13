@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface UpgradeItemProps {
   id: string;
@@ -21,7 +21,7 @@ export const UpgradeItem: React.FC<UpgradeItemProps> = ({
   cost,
   canAfford,
   onPurchase,
-  formatNumber
+  formatNumber,
 }) => {
   return (
     <div className="bg-gray-50 p-3 rounded-lg border">
@@ -35,7 +35,7 @@ export const UpgradeItem: React.FC<UpgradeItemProps> = ({
           <div className="text-sm text-gray-500">Level {currentLevel}</div>
         </div>
       </div>
-      
+
       <div className="flex justify-between items-center">
         <span className="text-yellow-600 font-semibold">
           💰 {formatNumber(cost)}
@@ -45,11 +45,11 @@ export const UpgradeItem: React.FC<UpgradeItemProps> = ({
           disabled={!canAfford}
           className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
             canAfford
-              ? 'bg-blue-600 hover:bg-blue-700 text-white'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              ? "bg-blue-600 hover:bg-blue-700 text-white"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >
-          {canAfford ? 'Buy' : 'Need more gold'}
+          {canAfford ? "Buy" : "Need more gold"}
         </button>
       </div>
     </div>

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FloatingNumberProps {
   value: number;
@@ -8,11 +8,11 @@ interface FloatingNumberProps {
   onComplete?: () => void;
 }
 
-export const FloatingNumber: React.FC<FloatingNumberProps> = ({ 
-  value, 
-  x, 
-  y, 
-  onComplete 
+export const FloatingNumber: React.FC<FloatingNumberProps> = ({
+  value,
+  x,
+  y,
+  onComplete,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -29,20 +29,20 @@ export const FloatingNumber: React.FC<FloatingNumberProps> = ({
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ 
-            opacity: 1, 
-            y: 0, 
-            x: x, 
-            top: y 
+          initial={{
+            opacity: 1,
+            y: 0,
+            x: x,
+            top: y,
           }}
-          animate={{ 
-            opacity: 0, 
-            y: -50 
+          animate={{
+            opacity: 0,
+            y: -50,
           }}
           exit={{ opacity: 0 }}
-          transition={{ 
-            duration: 2, 
-            ease: "easeOut" 
+          transition={{
+            duration: 2,
+            ease: "easeOut",
           }}
           className="fixed pointer-events-none z-50 text-lg font-bold text-emerald-500"
           style={{

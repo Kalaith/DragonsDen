@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 interface StatDisplayProps {
   icon: string;
@@ -9,21 +9,27 @@ interface StatDisplayProps {
   showChange?: boolean;
 }
 
-export const StatDisplay: React.FC<StatDisplayProps> = ({ 
-  icon, 
-  label, 
-  value, 
-  color = 'text-gray-800',
-  showChange = false
+export const StatDisplay: React.FC<StatDisplayProps> = ({
+  icon,
+  label,
+  value,
+  color = "text-gray-800",
+  showChange = false,
 }) => {
   const [previousValue, setPreviousValue] = useState(value);
   const [isIncreasing, setIsIncreasing] = useState(false);
 
   useEffect(() => {
     if (showChange && previousValue !== value) {
-      const numValue = typeof value === 'string' ? parseFloat(value.replace(/[^0-9.-]/g, '')) : value;
-      const numPrevious = typeof previousValue === 'string' ? parseFloat(previousValue.toString().replace(/[^0-9.-]/g, '')) : previousValue;
-      
+      const numValue =
+        typeof value === "string"
+          ? parseFloat(value.replace(/[^0-9.-]/g, ""))
+          : value;
+      const numPrevious =
+        typeof previousValue === "string"
+          ? parseFloat(previousValue.toString().replace(/[^0-9.-]/g, ""))
+          : previousValue;
+
       if (numValue > numPrevious) {
         setIsIncreasing(true);
         setTimeout(() => setIsIncreasing(false), 1000);
@@ -33,16 +39,16 @@ export const StatDisplay: React.FC<StatDisplayProps> = ({
   }, [value, showChange, previousValue]);
 
   return (
-    <motion.div 
+    <motion.div
       className={`flex items-center justify-between py-2 px-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors ${
-        isIncreasing ? 'ring-2 ring-green-400 ring-opacity-50' : ''
+        isIncreasing ? "ring-2 ring-green-400 ring-opacity-50" : ""
       }`}
       whileHover={{ scale: 1.02 }}
       animate={isIncreasing ? { scale: [1, 1.05, 1] } : {}}
       transition={{ duration: 0.3 }}
     >
       <div className="flex items-center gap-2">
-        <motion.span 
+        <motion.span
           className="text-lg"
           animate={isIncreasing ? { rotate: [0, 10, -10, 0] } : {}}
           transition={{ duration: 0.5 }}
@@ -51,8 +57,8 @@ export const StatDisplay: React.FC<StatDisplayProps> = ({
         </motion.span>
         <span className="text-sm font-medium text-gray-600">{label}</span>
       </div>
-      <motion.span 
-        className={`font-bold ${color} ${isIncreasing ? 'text-green-600' : ''}`}
+      <motion.span
+        className={`font-bold ${color} ${isIncreasing ? "text-green-600" : ""}`}
         key={value} // This will trigger animation on value change
         initial={{ scale: 1 }}
         animate={{ scale: isIncreasing ? [1, 1.2, 1] : 1 }}

@@ -1,7 +1,7 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { useServerGameStore } from '../../stores/serverGameStore';
-import { StatDisplay } from '../ui/StatDisplay';
+import React from "react";
+import { motion } from "framer-motion";
+import { useServerGameStore } from "../../stores/serverGameStore";
+import { StatDisplay } from "../ui/StatDisplay";
 
 export const ServerResourceCounter: React.FC = () => {
   const {
@@ -11,18 +11,18 @@ export const ServerResourceCounter: React.FC = () => {
     isLoading,
     error,
     lastAction,
-    pendingActions
+    pendingActions,
   } = useServerGameStore();
 
   const formatNumber = (num: number): string => {
-    if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
-    if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
-    if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+    if (num >= 1e9) return (num / 1e9).toFixed(1) + "B";
+    if (num >= 1e6) return (num / 1e6).toFixed(1) + "M";
+    if (num >= 1e3) return (num / 1e3).toFixed(1) + "K";
     return Math.floor(num).toFixed(0);
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="resource-counter"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -37,7 +37,7 @@ export const ServerResourceCounter: React.FC = () => {
           color="text-yellow-600"
           showChange={true}
         />
-        
+
         <StatDisplay
           icon="👹"
           label="Goblins"
@@ -45,7 +45,7 @@ export const ServerResourceCounter: React.FC = () => {
           color="text-red-600"
         />
       </div>
-      
+
       {/* Gold Per Second Display */}
       <div className="mt-2 text-center">
         <div className="text-sm text-gray-600">
@@ -57,12 +57,14 @@ export const ServerResourceCounter: React.FC = () => {
       <div className="flex items-center justify-between mt-3 text-xs">
         {/* Server Status */}
         <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${isLoading ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'}`} />
+          <div
+            className={`w-2 h-2 rounded-full ${isLoading ? "bg-yellow-500 animate-pulse" : "bg-green-500"}`}
+          />
           <span className="text-gray-600">
-            {isLoading ? 'Syncing...' : 'Server Connected'}
+            {isLoading ? "Syncing..." : "Server Connected"}
           </span>
         </div>
-        
+
         {/* Pending Actions */}
         {pendingActions.length > 0 && (
           <div className="flex items-center gap-1">
@@ -72,20 +74,16 @@ export const ServerResourceCounter: React.FC = () => {
             </span>
           </div>
         )}
-        
+
         {/* Last Action */}
-        {lastAction && (
-          <div className="text-gray-500">
-            Last: {lastAction}
-          </div>
-        )}
+        {lastAction && <div className="text-gray-500">Last: {lastAction}</div>}
       </div>
 
       {/* Error Display */}
-      {error && error !== 'Not logged in' && (
+      {error && error !== "Not logged in" && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
+          animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
           className="mt-2 p-2 bg-red-100 border border-red-300 rounded text-red-700 text-sm"
         >

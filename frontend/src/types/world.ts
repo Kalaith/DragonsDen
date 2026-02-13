@@ -1,8 +1,31 @@
-export type BiomeType = 'volcanic' | 'frozen' | 'forest' | 'desert' | 'swamp' | 'mountain' | 'ocean' | 'sky_realm' | 'shadow_realm';
+export type BiomeType =
+  | "volcanic"
+  | "frozen"
+  | "forest"
+  | "desert"
+  | "swamp"
+  | "mountain"
+  | "ocean"
+  | "sky_realm"
+  | "shadow_realm";
 
-export type WeatherType = 'clear' | 'rain' | 'storm' | 'fog' | 'blizzard' | 'sandstorm' | 'eclipse' | 'aurora';
+export type WeatherType =
+  | "clear"
+  | "rain"
+  | "storm"
+  | "fog"
+  | "blizzard"
+  | "sandstorm"
+  | "eclipse"
+  | "aurora";
 
-export type LocationDifficulty = 'peaceful' | 'easy' | 'normal' | 'hard' | 'extreme' | 'legendary';
+export type LocationDifficulty =
+  | "peaceful"
+  | "easy"
+  | "normal"
+  | "hard"
+  | "extreme"
+  | "legendary";
 
 export interface WeatherSystem {
   current: WeatherType;
@@ -24,19 +47,19 @@ export interface WorldLocation {
   explorationProgress: number; // 0-100
   coordinates: { x: number; y: number };
   requiredLevel: number;
-  
+
   resources: {
     commonTreasures: string[];
     rareTreasures: string[];
     uniqueResources: string[];
   };
-  
+
   encounters: {
     wildDragons: string[];
     ancientRuins: AncientRuin[];
     events: WorldEvent[];
   };
-  
+
   environmentEffects: {
     favoredElements: string[];
     resistantElements: string[];
@@ -47,7 +70,7 @@ export interface WorldLocation {
 export interface AncientRuin {
   id: string;
   name: string;
-  type: 'temple' | 'tower' | 'tomb' | 'library' | 'fortress' | 'sanctuary';
+  type: "temple" | "tower" | "tomb" | "library" | "fortress" | "sanctuary";
   explored: boolean;
   floors: RuinFloor[];
   requiredKeys: string[];
@@ -56,7 +79,7 @@ export interface AncientRuin {
 
 export interface RuinFloor {
   level: number;
-  layout: 'linear' | 'branching' | 'circular' | 'maze';
+  layout: "linear" | "branching" | "circular" | "maze";
   challenges: RuinChallenge[];
   treasures: string[];
   guardian?: {
@@ -67,7 +90,7 @@ export interface RuinFloor {
 }
 
 export interface RuinChallenge {
-  type: 'puzzle' | 'trap' | 'riddle' | 'combat' | 'stealth';
+  type: "puzzle" | "trap" | "riddle" | "combat" | "stealth";
   description: string;
   difficulty: number;
   solution?: string;
@@ -78,7 +101,7 @@ export interface RuinChallenge {
 export interface WorldEvent {
   id: string;
   name: string;
-  type: 'discovery' | 'encounter' | 'weather' | 'seasonal' | 'rare';
+  type: "discovery" | "encounter" | "weather" | "seasonal" | "rare";
   description: string;
   trigger: {
     condition: string;
@@ -122,15 +145,15 @@ export interface RivalDragonLord {
     averageLevel: number;
     favoriteElements: string[];
   };
-  personality: 'aggressive' | 'defensive' | 'cunning' | 'honorable' | 'chaotic';
+  personality: "aggressive" | "defensive" | "cunning" | "honorable" | "chaotic";
   lastInteraction: number;
   relationshipHistory: RivalInteraction[];
 }
 
 export interface RivalInteraction {
-  type: 'battle' | 'trade' | 'negotiation' | 'alliance' | 'betrayal';
+  type: "battle" | "trade" | "negotiation" | "alliance" | "betrayal";
   timestamp: number;
-  outcome: 'victory' | 'defeat' | 'draw' | 'success' | 'failure';
+  outcome: "victory" | "defeat" | "draw" | "success" | "failure";
   reputationChange: number;
   rewards?: string[];
 }

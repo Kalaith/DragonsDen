@@ -1,10 +1,25 @@
-import { Dragon, ElementType } from './dragons';
+import { Dragon, ElementType } from "./dragons";
 
-export type CombatPhase = 'preparation' | 'positioning' | 'battle' | 'resolution';
+export type CombatPhase =
+  | "preparation"
+  | "positioning"
+  | "battle"
+  | "resolution";
 
-export type BattleType = 'skirmish' | 'siege' | 'aerial' | 'dungeon' | 'arena' | 'raid';
+export type BattleType =
+  | "skirmish"
+  | "siege"
+  | "aerial"
+  | "dungeon"
+  | "arena"
+  | "raid";
 
-export type FormationPosition = 'frontline' | 'midline' | 'backline' | 'reserve' | 'aerial';
+export type FormationPosition =
+  | "frontline"
+  | "midline"
+  | "backline"
+  | "reserve"
+  | "aerial";
 
 export interface BattleFormation {
   positions: Record<FormationPosition, Dragon[]>;
@@ -29,7 +44,7 @@ export interface FormationWeakness {
 export interface CombatAction {
   id: string;
   dragonId: string;
-  type: 'attack' | 'defend' | 'ability' | 'move' | 'item';
+  type: "attack" | "defend" | "ability" | "move" | "item";
   targetId?: string;
   abilityId?: string;
   priority: number;
@@ -46,7 +61,7 @@ export interface CombatResult {
 }
 
 export interface CombatEffect {
-  type: 'damage' | 'heal' | 'buff' | 'debuff' | 'status';
+  type: "damage" | "heal" | "buff" | "debuff" | "status";
   value: number;
   duration: number;
   elementType?: ElementType;
@@ -96,7 +111,7 @@ export interface BattlePosition {
 export interface StatusEffect {
   id: string;
   name: string;
-  type: 'buff' | 'debuff' | 'neutral';
+  type: "buff" | "debuff" | "neutral";
   description: string;
   duration: number;
   effects: Record<string, number>;
@@ -114,7 +129,7 @@ export interface Battlefield {
 }
 
 export interface TerrainTile {
-  type: 'ground' | 'water' | 'lava' | 'ice' | 'forest' | 'mountain' | 'void';
+  type: "ground" | "water" | "lava" | "ice" | "forest" | "mountain" | "void";
   elevation: number;
   movementCost: number;
   effects: Record<string, number>;
@@ -123,7 +138,12 @@ export interface TerrainTile {
 }
 
 export interface BattleObjective {
-  type: 'defeat_all' | 'protect_target' | 'capture_points' | 'survive_time' | 'reach_location';
+  type:
+    | "defeat_all"
+    | "protect_target"
+    | "capture_points"
+    | "survive_time"
+    | "reach_location";
   description: string;
   isComplete: boolean;
   progress: number;
@@ -134,7 +154,12 @@ export interface BattleObjective {
 export interface EnvironmentalHazard {
   id: string;
   name: string;
-  type: 'fire_pit' | 'ice_storm' | 'lightning_field' | 'poison_cloud' | 'gravity_well';
+  type:
+    | "fire_pit"
+    | "ice_storm"
+    | "lightning_field"
+    | "poison_cloud"
+    | "gravity_well";
   position: { x: number; y: number; z?: number };
   radius: number;
   damage: number;
@@ -150,7 +175,7 @@ export interface EnvironmentalHazard {
 export interface SiegeWeapon {
   id: string;
   name: string;
-  type: 'catapult' | 'ballista' | 'ram' | 'tower' | 'cannon';
+  type: "catapult" | "ballista" | "ram" | "tower" | "cannon";
   health: number;
   maxHealth: number;
   damage: number;
@@ -163,7 +188,7 @@ export interface SiegeWeapon {
 export interface Fortification {
   id: string;
   name: string;
-  type: 'wall' | 'tower' | 'gate' | 'keep' | 'moat';
+  type: "wall" | "tower" | "gate" | "keep" | "moat";
   health: number;
   maxHealth: number;
   defenseBonus: number;
