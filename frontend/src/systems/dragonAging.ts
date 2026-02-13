@@ -26,7 +26,7 @@ export interface AgeModifiers {
   };
 }
 
-export const AGE_REQUIREMENTS: Record<DragonAge, AgeRequirements> = {
+export const ageRequirements: Record<DragonAge, AgeRequirements> = {
   hatchling: {
     experience: 0,
     minimumTime: 0
@@ -73,7 +73,7 @@ export const AGE_REQUIREMENTS: Record<DragonAge, AgeRequirements> = {
   }
 };
 
-export const AGE_MODIFIERS: Record<DragonAge, AgeModifiers> = {
+export const ageModifiers: Record<DragonAge, AgeModifiers> = {
   hatchling: {
     statMultipliers: {
       attack: 0.6,
@@ -197,7 +197,7 @@ export class DragonAgingSystem {
     
     if (!nextAge) return false;
     
-    const requirements = AGE_REQUIREMENTS[nextAge];
+    const requirements = ageRequirements[nextAge];
     const hoursAlive = (currentTime - dragon.discoveredAt) / (1000 * 60 * 60);
     
     // Check basic requirements
@@ -219,8 +219,8 @@ export class DragonAgingSystem {
     const nextAge = this.getNextAge(dragon.traits.age);
     if (!nextAge || !this.canAgeUp(dragon, Date.now())) return dragon;
     
-    const newModifiers = AGE_MODIFIERS[nextAge];
-    const oldModifiers = AGE_MODIFIERS[dragon.traits.age];
+    const newModifiers = ageModifiers[nextAge];
+    const oldModifiers = ageModifiers[dragon.traits.age];
     
     // Calculate new stats by removing old age modifiers and applying new ones
     const newStats: DragonStats = { ...dragon.stats };
@@ -234,9 +234,9 @@ export class DragonAgingSystem {
     // Update appearance
     const newAppearance = {
       ...dragon.appearance,
-      size: dragon.appearance.size * (newModifiers.appearance.sizeMultiplier / (AGE_MODIFIERS[dragon.traits.age].appearance.sizeMultiplier)),
+      size: dragon.appearance.size * (newModifiers.appearance.sizeMultiplier / (ageModifiers[dragon.traits.age].appearance.sizeMultiplier)),
       specialFeatures: [
-        ...dragon.appearance.specialFeatures.filter(f => !AGE_MODIFIERS[dragon.traits.age].appearance.specialFeatures.includes(f)),
+        ...dragon.appearance.specialFeatures.filter(f => !ageModifiers[dragon.traits.age].appearance.specialFeatures.includes(f)),
         ...newModifiers.appearance.specialFeatures
       ]
     };
@@ -325,7 +325,7 @@ export class DragonAgingSystem {
     const nextAge = this.getNextAge(dragon.traits.age);
     if (!nextAge) return { hours: 0, requirements: ['Already at maximum age'] };
     
-    const requirements = AGE_REQUIREMENTS[nextAge];
+    const requirements = ageRequirements[nextAge];
     const currentTime = Date.now();
     const hoursAlive = (currentTime - dragon.discoveredAt) / (1000 * 60 * 60);
     

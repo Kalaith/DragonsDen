@@ -1,4 +1,4 @@
-import { WorldLocation, BiomeType, LocationDifficulty, AncientRuin, WorldEvent } from '../types/world';
+import { WorldLocation, BiomeType, LocationDifficulty, AncientRuin, WorldEvent, RuinFloor } from '../types/world';
 import { ElementType } from '../types/dragons';
 
 export interface WorldGenerationConfig {
@@ -207,61 +207,61 @@ export class WorldGenerator {
     return baseLevels[difficulty] + distanceBonus;
   }
   
-  private generateResources(biome: BiomeType, difficulty: LocationDifficulty, height: number): any {
+  private generateResources(biome: BiomeType, difficulty: LocationDifficulty, height: number): WorldLocation['resources'] {
     void difficulty;
     void height;
     const biomeResources = {
       volcanic: {
-        common: ['obsidian_shard', 'sulfur_crystal', 'lava_stone'],
-        rare: ['fire_essence', 'molten_core', 'phoenix_feather'],
-        unique: ['dragon_heart_ruby', 'eternal_flame']
+        commonTreasures: ['obsidian_shard', 'sulfur_crystal', 'lava_stone'],
+        rareTreasures: ['fire_essence', 'molten_core', 'phoenix_feather'],
+        uniqueResources: ['dragon_heart_ruby', 'eternal_flame']
       },
       frozen: {
-        common: ['ice_crystal', 'frost_berry', 'winter_herb'],
-        rare: ['frozen_tear', 'ice_essence', 'aurora_fragment'],
-        unique: ['heart_of_winter', 'glacier_core']
+        commonTreasures: ['ice_crystal', 'frost_berry', 'winter_herb'],
+        rareTreasures: ['frozen_tear', 'ice_essence', 'aurora_fragment'],
+        uniqueResources: ['heart_of_winter', 'glacier_core']
       },
       forest: {
-        common: ['elderwood', 'moonflower', 'spirit_moss'],
-        rare: ['treant_bark', 'fairy_dust', 'nature_essence'],
-        unique: ['world_tree_seed', 'druid_stone']
+        commonTreasures: ['elderwood', 'moonflower', 'spirit_moss'],
+        rareTreasures: ['treant_bark', 'fairy_dust', 'nature_essence'],
+        uniqueResources: ['world_tree_seed', 'druid_stone']
       },
       desert: {
-        common: ['sand_glass', 'cactus_spine', 'sun_stone'],
-        rare: ['mirage_essence', 'desert_rose', 'scorpion_venom'],
-        unique: ['pharaoh_treasure', 'oasis_heart']
+        commonTreasures: ['sand_glass', 'cactus_spine', 'sun_stone'],
+        rareTreasures: ['mirage_essence', 'desert_rose', 'scorpion_venom'],
+        uniqueResources: ['pharaoh_treasure', 'oasis_heart']
       },
       swamp: {
-        common: ['bog_root', 'marsh_gas', 'toxic_moss'],
-        rare: ['will_o_wisp', 'swamp_essence', 'crocodile_scale'],
-        unique: ['ancient_bog_treasure', 'plague_source']
+        commonTreasures: ['bog_root', 'marsh_gas', 'toxic_moss'],
+        rareTreasures: ['will_o_wisp', 'swamp_essence', 'crocodile_scale'],
+        uniqueResources: ['ancient_bog_treasure', 'plague_source']
       },
       mountain: {
-        common: ['mountain_ore', 'eagle_feather', 'stone_moss'],
-        rare: ['mythril_vein', 'wind_essence', 'giant_tooth'],
-        unique: ['mountain_king_crown', 'skyforge_metal']
+        commonTreasures: ['mountain_ore', 'eagle_feather', 'stone_moss'],
+        rareTreasures: ['mythril_vein', 'wind_essence', 'giant_tooth'],
+        uniqueResources: ['mountain_king_crown', 'skyforge_metal']
       },
       ocean: {
-        common: ['coral_fragment', 'sea_salt', 'kelp_strand'],
-        rare: ['pearl', 'water_essence', 'kraken_ink'],
-        unique: ['poseidon_trident', 'leviathan_scale']
+        commonTreasures: ['coral_fragment', 'sea_salt', 'kelp_strand'],
+        rareTreasures: ['pearl', 'water_essence', 'kraken_ink'],
+        uniqueResources: ['poseidon_trident', 'leviathan_scale']
       },
       sky_realm: {
-        common: ['cloud_essence', 'wind_feather', 'star_fragment'],
-        rare: ['storm_core', 'lightning_bottle', 'celestial_silk'],
-        unique: ['sky_god_blessing', 'rainbow_bridge_shard']
+        commonTreasures: ['cloud_essence', 'wind_feather', 'star_fragment'],
+        rareTreasures: ['storm_core', 'lightning_bottle', 'celestial_silk'],
+        uniqueResources: ['sky_god_blessing', 'rainbow_bridge_shard']
       },
       shadow_realm: {
-        common: ['shadow_wisp', 'dark_crystal', 'void_essence'],
-        rare: ['nightmare_fuel', 'soul_fragment', 'darkness_incarnate'],
-        unique: ['abyss_heart', 'oblivion_shard']
+        commonTreasures: ['shadow_wisp', 'dark_crystal', 'void_essence'],
+        rareTreasures: ['nightmare_fuel', 'soul_fragment', 'darkness_incarnate'],
+        uniqueResources: ['abyss_heart', 'oblivion_shard']
       }
     };
     
     return biomeResources[biome] || biomeResources.forest;
   }
   
-  private generateEncounters(biome: BiomeType, difficulty: LocationDifficulty): any {
+  private generateEncounters(biome: BiomeType, difficulty: LocationDifficulty): WorldLocation['encounters'] {
     // Generate wild dragons, ruins, and events based on biome and difficulty
     const encounters = {
       wildDragons: this.generateWildDragons(biome, difficulty),
@@ -319,7 +319,7 @@ export class WorldGenerator {
     return [];
   }
   
-  private generateEnvironmentalEffects(biome: BiomeType): any {
+  private generateEnvironmentalEffects(biome: BiomeType): WorldLocation['environmentEffects'] {
     const biomeEffects = {
       volcanic: {
         favoredElements: ['fire'],
@@ -406,7 +406,8 @@ export class WorldGenerator {
     return `${adjectives[biome] || 'Ancient'} ${type.charAt(0).toUpperCase() + type.slice(1)}`;
   }
   
-  private generateRuinFloors(type: string, difficulty: LocationDifficulty): any[] {
+  private generateRuinFloors(type: string, difficulty: LocationDifficulty): RuinFloor[] {
+    void type;
     const floorCount = {
       peaceful: 1,
       easy: 2,
@@ -418,7 +419,7 @@ export class WorldGenerator {
     
     return Array.from({ length: floorCount }, (_, i) => ({
       level: i + 1,
-      layout: this.rng.choice(['linear', 'branching', 'circular', 'maze']),
+      layout: this.rng.choice(['linear', 'branching', 'circular', 'maze'] as const),
       challenges: [],
       treasures: [],
       guardian: i === floorCount - 1 ? { type: 'boss', difficulty: 8, rewards: [] } : undefined

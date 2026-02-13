@@ -1,6 +1,22 @@
 import { create } from 'zustand';
+import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { apiClient } from '../api';
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const toStringArray = (value: unknown): string[] =>
+  Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string') : [];
+
+const toNumber = (value: unknown): number => {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+};
 
 interface ServerGameState {
   // Server-authoritative state
@@ -24,7 +40,7 @@ interface ServerGameState {
   pendingActions: Array<{
     id: string;
     type: string;
-    data: any;
+    data: Record<string, unknown>;
     timestamp: number;
   }>;
 }
@@ -43,7 +59,7 @@ interface ServerGameStore extends ServerGameState {
   // Utility actions
   startOptimisticUpdates: () => void;
   stopOptimisticUpdates: () => void;
-  reconcileWithServer: (serverData: any) => void;
+  reconcileWithServer: (serverData: unknown) => void;
   
   // Getters for display
   getDisplayGold: () => number;
@@ -87,7 +103,7 @@ export const useServerGameStore = create<ServerGameStore>()(
             lastServerSync: Date.now(),
             isLoading: false 
           });
-        } catch {
+        } catch (error: unknown) {
           console.error('Server sync failed:', error);
           set({ 
             error: error instanceof Error ? error.message : 'Sync failed',
@@ -97,15 +113,20 @@ export const useServerGameStore = create<ServerGameStore>()(
       },
       
       // Reconcile optimistic state with server state
-      reconcileWithServer: (serverData: any) => {
-        const serverGold = parseFloat(serverData.gold) || 0;
-        const serverGoblins = parseFloat(serverData.goblins) || 0;
+      reconcileWithServer: (serverData: unknown) => {
+        if (!isRecord(serverData)) {
+          set({ error: 'Invalid server data' });
+          return;
+        }
+
+        const serverGold = toNumber(serverData.gold);
+        const serverGoblins = toNumber(serverData.goblins);
         
         set({
           serverGold,
           serverGoblins,
-          serverAchievements: serverData.achievements || [],
-          serverTreasures: serverData.treasures || [],
+          serverAchievements: toStringArray(serverData.achievements),
+          serverTreasures: toStringArray(serverData.treasures),
           
           // Reset optimistic state to match server
           optimisticGold: serverGold,
@@ -358,16 +379,28 @@ export const useServerGameStore = create<ServerGameStore>()(
         lastServerSync: state.lastServerSync,
         goldPerSecond: state.goldPerSecond
       }),
-      merge: (persistedState: any, currentState) => ({
-        ...currentState,
-        ...persistedState,
-        // Reset optimistic state to server state on load
-        optimisticGold: persistedState.serverGold || 0,
-        optimisticGoblins: persistedState.serverGoblins || 0,
-        isLoading: false,
-        error: null,
-        pendingActions: []
-      })
+      merge: (persistedState: unknown, currentState) => {
+        if (!isRecord(persistedState)) return currentState;
+
+        const serverGold = toNumber(persistedState.serverGold);
+        const serverGoblins = toNumber(persistedState.serverGoblins);
+
+        return {
+          ...currentState,
+          serverGold,
+          serverGoblins,
+          serverAchievements: toStringArray(persistedState.serverAchievements),
+          serverTreasures: toStringArray(persistedState.serverTreasures),
+          lastServerSync: toNumber(persistedState.lastServerSync),
+          goldPerSecond: toNumber(persistedState.goldPerSecond) || currentState.goldPerSecond,
+          // Reset optimistic state to server state on load
+          optimisticGold: serverGold,
+          optimisticGoblins: serverGoblins,
+          isLoading: false,
+          error: null,
+          pendingActions: []
+        };
+      }
     }
   )
 );

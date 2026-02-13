@@ -14,7 +14,7 @@ export interface WeatherEffect {
   specialEffects: string[];
 }
 
-export const WEATHER_EFFECTS: Record<WeatherType, WeatherEffect> = {
+export const weatherEffects: Record<WeatherType, WeatherEffect> = {
   clear: {
     explorationSpeed: 1.0,
     treasureChance: 1.0,
@@ -145,7 +145,7 @@ export const WEATHER_EFFECTS: Record<WeatherType, WeatherEffect> = {
   }
 };
 
-export const BIOME_WEATHER_PATTERNS: Record<BiomeType, { common: WeatherType[]; rare: WeatherType[]; impossible: WeatherType[] }> = {
+export const biomeWeatherPatterns: Record<BiomeType, { common: WeatherType[]; rare: WeatherType[]; impossible: WeatherType[] }> = {
   volcanic: {
     common: ['clear', 'fog'],
     rare: ['rain', 'eclipse'],
@@ -210,7 +210,7 @@ export class WeatherSystemManager {
     this.currentWeather = {
       current: 'clear',
       duration: 120, // 2 hours default
-      effects: WEATHER_EFFECTS.clear
+      effects: weatherEffects.clear
     };
   }
   
@@ -226,7 +226,7 @@ export class WeatherSystemManager {
   }
   
   private generateNewWeather(biome?: BiomeType): void {
-    const patterns = biome ? BIOME_WEATHER_PATTERNS[biome] : {
+    const patterns = biome ? biomeWeatherPatterns[biome] : {
       common: ['clear', 'rain', 'fog'],
       rare: ['storm', 'eclipse'],
       impossible: []
@@ -264,7 +264,7 @@ export class WeatherSystemManager {
     this.currentWeather = {
       current: newWeather,
       duration,
-      effects: WEATHER_EFFECTS[newWeather]
+      effects: weatherEffects[newWeather]
     };
     
     // Record in history
@@ -313,7 +313,7 @@ export class WeatherSystemManager {
     return { ...this.currentWeather };
   }
   
-  getWeatherEffect(stat: keyof WeatherEffect): any {
+  getWeatherEffect<K extends keyof WeatherEffect>(stat: K): WeatherEffect[K] {
     return this.currentWeather.effects[stat];
   }
   
@@ -343,14 +343,14 @@ export class WeatherSystemManager {
     this.currentWeather = {
       current: newWeather,
       duration: duration || this.calculateWeatherDuration(newWeather),
-      effects: WEATHER_EFFECTS[newWeather]
+      effects: weatherEffects[newWeather]
     };
   }
   
   getWeatherForecast(biome?: BiomeType, hoursAhead = 12): Array<{ weather: WeatherType; probability: number }> {
     void hoursAhead;
     // Simple forecast system based on current conditions and patterns
-    const patterns = biome ? BIOME_WEATHER_PATTERNS[biome] : {
+    const patterns = biome ? biomeWeatherPatterns[biome] : {
       common: ['clear', 'rain', 'fog'],
       rare: ['storm', 'eclipse'],
       impossible: []

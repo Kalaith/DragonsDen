@@ -1,6 +1,6 @@
 import { ElementalAdvantage, ElementType } from '../types/dragons';
 
-export const ELEMENTAL_ADVANTAGES: Record<ElementType, ElementalAdvantage> = {
+export const elementalAdvantages: Record<ElementType, ElementalAdvantage> = {
   fire: {
     element: 'fire',
     strongAgainst: ['ice', 'earth'],
@@ -51,7 +51,7 @@ export const ELEMENTAL_ADVANTAGES: Record<ElementType, ElementalAdvantage> = {
   }
 };
 
-export const ELEMENT_COLORS = {
+export const elementColors = {
   fire: '#FF4500',
   ice: '#87CEEB',
   earth: '#8B4513',
@@ -62,7 +62,7 @@ export const ELEMENT_COLORS = {
   lightning: '#9370DB'
 };
 
-export const ELEMENT_DESCRIPTIONS = {
+export const elementDescriptions = {
   fire: 'Masters of flame and heat, dealing devastating damage over time',
   ice: 'Controllers of frost, slowing enemies and providing defensive barriers',
   earth: 'Stalwart defenders with high health and armor penetration',
@@ -74,7 +74,7 @@ export const ELEMENT_DESCRIPTIONS = {
 };
 
 export function calculateElementalDamageMultiplier(attackerElement: ElementType, defenderElement: ElementType): number {
-  const attacker = ELEMENTAL_ADVANTAGES[attackerElement];
+  const attacker = elementalAdvantages[attackerElement];
   
   if (attacker.strongAgainst.includes(defenderElement)) {
     return 1.5; // 50% bonus damage
@@ -84,7 +84,7 @@ export function calculateElementalDamageMultiplier(attackerElement: ElementType,
     return 0.75; // 25% reduced damage
   }
   
-  const defender = ELEMENTAL_ADVANTAGES[defenderElement];
+  const defender = elementalAdvantages[defenderElement];
   if (defender.immuneTo && defender.immuneTo.includes(attackerElement)) {
     return 0.1; // 90% damage reduction (near immunity)
   }
@@ -93,5 +93,5 @@ export function calculateElementalDamageMultiplier(attackerElement: ElementType,
 }
 
 export function getElementalInteractions(element: ElementType) {
-  return ELEMENTAL_ADVANTAGES[element];
+  return elementalAdvantages[element];
 }

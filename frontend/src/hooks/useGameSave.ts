@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore';
-import { GAME_CONSTANTS } from '../constants/gameConstants';
+import { gameConstants } from '../constants/gameConstants';
 
-export const useGameSave = (interval: number = GAME_CONSTANTS.AUTO_SAVE_INTERVAL) => {
+export const useGameSave = (interval: number = gameConstants.AUTO_SAVE_INTERVAL) => {
   useEffect(() => {
     const saveInterval = setInterval(() => {
       // Zustand persist middleware handles the actual saving

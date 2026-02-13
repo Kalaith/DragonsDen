@@ -2,7 +2,10 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { GameState } from '../types/game';
 import { Treasure } from '../types/treasures';
-import { GAME_CONSTANTS } from '../constants/gameConstants';
+import { gameConstants } from '../constants/gameConstants';
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
 
 interface GameStore extends GameState {
   // Actions
@@ -58,7 +61,7 @@ export const useGameStore = create<GameStore>()(
           const goldEarned = state.minions * 10;
           set((prevState) => ({
             gold: prevState.gold + goldEarned,
-            cooldowns: { ...prevState.cooldowns, minions: GAME_CONSTANTS.MINION_COOLDOWN }
+            cooldowns: { ...prevState.cooldowns, minions: gameConstants.MINION_COOLDOWN }
           }));
         }
       },
@@ -67,10 +70,10 @@ export const useGameStore = create<GameStore>()(
         const state = get();
         if (state.cooldowns.explore <= 0) {
           set((prevState) => ({
-            cooldowns: { ...prevState.cooldowns, explore: GAME_CONSTANTS.EXPLORE_COOLDOWN }
+            cooldowns: { ...prevState.cooldowns, explore: gameConstants.EXPLORE_COOLDOWN }
           }));
           // Treasure discovery chance
-          if (Math.random() < GAME_CONSTANTS.TREASURE_DISCOVERY_CHANCE) {
+          if (Math.random() < gameConstants.TREASURE_DISCOVERY_CHANCE) {
             get().discoverTreasure();
           }
         }
@@ -82,7 +85,7 @@ export const useGameStore = create<GameStore>()(
         
         // Special case for hiring minions
         if (upgradeId === 'hireMinionUpgrade') {
-          const hireCost = GAME_CONSTANTS.MINION_BASE_COST * Math.pow(GAME_CONSTANTS.MINION_COST_MULTIPLIER, state.minions);
+          const hireCost = gameConstants.MINION_BASE_COST * Math.pow(gameConstants.MINION_COST_MULTIPLIER, state.minions);
           if (state.gold >= hireCost) {
             set((prevState) => ({
               gold: prevState.gold - hireCost,
@@ -127,7 +130,7 @@ export const useGameStore = create<GameStore>()(
 
       prestige: () => {
         const state = get();
-        if (state.gold >= GAME_CONSTANTS.PRESTIGE_REQUIREMENT) {
+        if (state.gold >= gameConstants.PRESTIGE_REQUIREMENT) {
           set(() => ({
             gold: 0,
             totalTreasures: 0,
@@ -147,7 +150,7 @@ export const useGameStore = create<GameStore>()(
         const state = get();
         let base = 1;
         const clawLevel = state.upgrades.clawSharpness || 0;
-        base *= (1 + clawLevel * GAME_CONSTANTS.CLAW_EFFECTIVENESS);
+        base *= (1 + clawLevel * gameConstants.CLAW_EFFECTIVENESS);
         
         // Apply treasure bonuses
         state.discoveredTreasures.forEach(treasure => {
@@ -163,15 +166,15 @@ export const useGameStore = create<GameStore>()(
         const state = get();
         let base = 0.1;
         const minionLevel = state.upgrades.minionEfficiency || 0;
-        base += state.minions * (1 + minionLevel * GAME_CONSTANTS.MINION_EFFECTIVENESS);
+        base += state.minions * (1 + minionLevel * gameConstants.MINION_EFFECTIVENESS);
         return base;
       },
 
       calculateUpgradeCost: (upgradeId: string) => {
         const state = get();
         const level = state.upgrades[upgradeId] || 0;
-        const baseCost = GAME_CONSTANTS.UPGRADE_BASE_COSTS[upgradeId as keyof typeof GAME_CONSTANTS.UPGRADE_BASE_COSTS] || 100;
-        return Math.floor(baseCost * Math.pow(GAME_CONSTANTS.UPGRADE_COST_MULTIPLIER, level));
+        const baseCost = gameConstants.UPGRADE_BASE_COSTS[upgradeId as keyof typeof gameConstants.UPGRADE_BASE_COSTS] || 100;
+        return Math.floor(baseCost * Math.pow(gameConstants.UPGRADE_COST_MULTIPLIER, level));
       },
 
       formatNumber: (num: number) => {
@@ -230,12 +233,40 @@ export const useGameStore = create<GameStore>()(
         prestigeLevel: state.prestigeLevel,
         lastSave: state.lastSave,
       }),
-      merge: (persistedState: any, currentState) => ({
-        ...currentState,
-        ...persistedState,
-        uniqueTreasures: new Set(persistedState.uniqueTreasures || []),
-        achievements: new Set(persistedState.achievements || []),
-      }),
+      merge: (persistedState: unknown, currentState) => {
+        if (!isRecord(persistedState)) return currentState;
+
+        const uniqueTreasures = Array.isArray(persistedState.uniqueTreasures)
+          ? persistedState.uniqueTreasures.filter((v): v is string => typeof v === 'string')
+          : [];
+
+        const achievements = Array.isArray(persistedState.achievements)
+          ? persistedState.achievements.filter((v): v is string => typeof v === 'string')
+          : [];
+
+        return {
+          ...currentState,
+          gold: typeof persistedState.gold === 'number' ? persistedState.gold : currentState.gold,
+          totalTreasures:
+            typeof persistedState.totalTreasures === 'number'
+              ? persistedState.totalTreasures
+              : currentState.totalTreasures,
+          uniqueTreasures: new Set(uniqueTreasures),
+          minions: typeof persistedState.minions === 'number' ? persistedState.minions : currentState.minions,
+          upgrades: isRecord(persistedState.upgrades)
+            ? (persistedState.upgrades as Record<string, number>)
+            : currentState.upgrades,
+          discoveredTreasures: Array.isArray(persistedState.discoveredTreasures)
+            ? (persistedState.discoveredTreasures as Treasure[])
+            : currentState.discoveredTreasures,
+          achievements: new Set(achievements),
+          prestigeLevel:
+            typeof persistedState.prestigeLevel === 'number'
+              ? persistedState.prestigeLevel
+              : currentState.prestigeLevel,
+          lastSave: typeof persistedState.lastSave === 'number' ? persistedState.lastSave : currentState.lastSave
+        };
+      },
     }
   )
 );

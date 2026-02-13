@@ -1,5 +1,5 @@
 import { AncientRuin, RuinChallenge } from '../types/world';
-import { Dragon } from '../types/dragons';
+import { Dragon, type DragonStats, type ElementType } from '../types/dragons';
 
 export type PuzzleType = 
   | 'symbol_sequence' 
@@ -24,11 +24,11 @@ export type TrapType =
 export interface PuzzleSolution {
   type: PuzzleType;
   difficulty: number;
-  solution: any;
+  solution: unknown;
   hints: string[];
   timeLimit?: number;
-  requiredElements?: string[];
-  requiredStats?: { stat: string; minimum: number }[];
+  requiredElements?: ElementType[];
+  requiredStats?: Array<{ stat: keyof DragonStats; minimum: number }>;
 }
 
 export interface TrapConfiguration {
@@ -53,7 +53,7 @@ export interface ExplorationResult {
   newRoomUnlocked?: boolean;
 }
 
-export const PUZZLE_TEMPLATES: Record<PuzzleType, PuzzleSolution[]> = {
+export const puzzleTemplates: Record<PuzzleType, PuzzleSolution[]> = {
   symbol_sequence: [
     {
       type: 'symbol_sequence',
@@ -193,7 +193,7 @@ export const PUZZLE_TEMPLATES: Record<PuzzleType, PuzzleSolution[]> = {
   ]
 };
 
-export const TRAP_CONFIGURATIONS: Record<TrapType, TrapConfiguration[]> = {
+export const trapConfigurations: Record<TrapType, TrapConfiguration[]> = {
   spike_trap: [
     {
       type: 'spike_trap',
@@ -280,7 +280,7 @@ export class RuinsExplorationSystem {
     ruin: AncientRuin, 
     floorIndex: number, 
     explorationTeam: Dragon[], 
-    playerChoices: Record<string, any> = {}
+    playerChoices: Record<string, unknown> = {}
   ): ExplorationResult {
     const floor = ruin.floors[floorIndex];
     if (!floor) {
@@ -348,7 +348,7 @@ export class RuinsExplorationSystem {
   static processChallenge(
     challenge: RuinChallenge, 
     team: Dragon[], 
-    playerChoices: Record<string, any>
+    playerChoices: Record<string, unknown>
   ): ExplorationResult {
     switch (challenge.type) {
       case 'puzzle':
@@ -375,7 +375,7 @@ export class RuinsExplorationSystem {
   static solvePuzzle(
     challenge: RuinChallenge, 
     team: Dragon[], 
-    playerChoices: Record<string, any>
+    playerChoices: Record<string, unknown>
   ): ExplorationResult {
     const puzzle = this.generatePuzzle(challenge.difficulty);
     const playerSolution = playerChoices[`puzzle_${challenge.description}`];
@@ -420,10 +420,11 @@ export class RuinsExplorationSystem {
   static disarmTrap(
     challenge: RuinChallenge, 
     team: Dragon[], 
-    playerChoices: Record<string, any>
+    playerChoices: Record<string, unknown>
   ): ExplorationResult {
     const trap = this.generateTrap(challenge.difficulty);
-    const approach = playerChoices[`trap_${challenge.description}`] || 'careful';
+    const approachValue = playerChoices[`trap_${challenge.description}`];
+    const approach = typeof approachValue === 'string' ? approachValue : 'careful';
     
     const bestDragon = this.getBestDragonForTrap(team, trap);
     const skillValue = this.calculateTrapDisarmSkill(bestDragon, trap);
@@ -485,10 +486,11 @@ export class RuinsExplorationSystem {
   static answerRiddle(
     challenge: RuinChallenge, 
     team: Dragon[], 
-    playerChoices: Record<string, any>
+    playerChoices: Record<string, unknown>
   ): ExplorationResult {
     const riddle = this.generateRiddle(challenge.difficulty);
-    const playerAnswer = playerChoices[`riddle_${challenge.description}`]?.toLowerCase();
+    const playerAnswerValue = playerChoices[`riddle_${challenge.description}`];
+    const playerAnswer = typeof playerAnswerValue === 'string' ? playerAnswerValue.toLowerCase() : '';
     
     // Check intelligence requirements
     const smartestDragon = team.reduce((best, current) => 
@@ -497,7 +499,7 @@ export class RuinsExplorationSystem {
     
     if (riddle.requiredStats) {
       for (const req of riddle.requiredStats) {
-        const dragonStat = smartestDragon.stats[req.stat as keyof typeof smartestDragon.stats];
+        const dragonStat = smartestDragon.stats[req.stat];
         if (typeof dragonStat === 'number' && dragonStat < req.minimum) {
           return {
             success: false,
@@ -511,7 +513,8 @@ export class RuinsExplorationSystem {
       }
     }
     
-    const correct = playerAnswer === riddle.solution.toLowerCase();
+    const riddleSolution = typeof riddle.solution === 'string' ? riddle.solution.toLowerCase() : '';
+    const correct = playerAnswer === riddleSolution;
     
     if (correct) {
       return {
@@ -621,13 +624,13 @@ export class RuinsExplorationSystem {
   
   // Helper methods
   private static generatePuzzle(difficulty: number): PuzzleSolution {
-    const puzzleTypes = Object.keys(PUZZLE_TEMPLATES) as PuzzleType[];
+    const puzzleTypes = Object.keys(puzzleTemplates) as PuzzleType[];
     const suitablePuzzles = puzzleTypes.filter(type => 
-      PUZZLE_TEMPLATES[type].some(p => Math.abs(p.difficulty - difficulty) <= 1)
+      puzzleTemplates[type].some(p => Math.abs(p.difficulty - difficulty) <= 1)
     );
     
     const randomType = suitablePuzzles[Math.floor(Math.random() * suitablePuzzles.length)];
-    const puzzles = PUZZLE_TEMPLATES[randomType].filter(p => 
+    const puzzles = puzzleTemplates[randomType].filter(p => 
       Math.abs(p.difficulty - difficulty) <= 1
     );
     
@@ -636,19 +639,19 @@ export class RuinsExplorationSystem {
   
   private static generateTrap(difficulty: number): TrapConfiguration {
     void difficulty;
-    const trapTypes = Object.keys(TRAP_CONFIGURATIONS) as TrapType[];
+    const trapTypes = Object.keys(trapConfigurations) as TrapType[];
     const randomType = trapTypes[Math.floor(Math.random() * trapTypes.length)];
-    const traps = TRAP_CONFIGURATIONS[randomType];
+    const traps = trapConfigurations[randomType];
     
     return traps[Math.floor(Math.random() * traps.length)];
   }
   
   private static generateRiddle(difficulty: number): PuzzleSolution {
-    const riddles = PUZZLE_TEMPLATES.riddle.filter(r => 
+    const riddles = puzzleTemplates.riddle.filter(r => 
       Math.abs(r.difficulty - difficulty) <= 1
     );
     
-    return riddles[Math.floor(Math.random() * riddles.length)] || PUZZLE_TEMPLATES.riddle[0];
+    return riddles[Math.floor(Math.random() * riddles.length)] || puzzleTemplates.riddle[0];
   }
   
   private static checkPuzzleRequirements(
@@ -656,10 +659,14 @@ export class RuinsExplorationSystem {
     team: Dragon[]
   ): { success: boolean; reason?: string } {
     if (puzzle.requiredElements) {
-      const teamElements = new Set(team.flatMap(d => [d.traits.primaryElement, d.traits.secondaryElement].filter(Boolean)));
+      const teamElements = new Set(
+        team
+          .flatMap((d) => [d.traits.primaryElement, d.traits.secondaryElement])
+          .filter((e): e is ElementType => Boolean(e))
+      );
       
       for (const element of puzzle.requiredElements) {
-        if (!teamElements.has(element as any)) {
+        if (!teamElements.has(element)) {
           return { 
             success: false, 
             reason: `Missing required element: ${element}` 
@@ -671,7 +678,7 @@ export class RuinsExplorationSystem {
     if (puzzle.requiredStats) {
       for (const req of puzzle.requiredStats) {
         const hasStat = team.some(dragon => {
-          const stat = dragon.stats[req.stat as keyof typeof dragon.stats];
+          const stat = dragon.stats[req.stat];
           return typeof stat === 'number' && stat >= req.minimum;
         });
         
@@ -687,7 +694,7 @@ export class RuinsExplorationSystem {
     return { success: true };
   }
   
-  private static validatePuzzleSolution(puzzle: PuzzleSolution, playerSolution: any): boolean {
+  private static validatePuzzleSolution(puzzle: PuzzleSolution, playerSolution: unknown): boolean {
     if (Array.isArray(puzzle.solution)) {
       return JSON.stringify(puzzle.solution) === JSON.stringify(playerSolution);
     }
@@ -785,7 +792,11 @@ export class RuinsExplorationSystem {
     return baseRewards;
   }
   
-  private static processGuardian(guardian: any, team: Dragon[]): ExplorationResult {
+  private static processGuardian(
+    guardian: { type: string; difficulty: number; rewards: string[] },
+    team: Dragon[]
+  ): ExplorationResult {
+    void guardian.type;
     // Process floor guardian (boss fight)
     const teamPower = team.reduce((total, dragon) => 
       total + dragon.stats.attack + dragon.stats.defense + dragon.stats.health, 0

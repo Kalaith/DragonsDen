@@ -24,7 +24,7 @@ export interface PersonalityTraits {
   };
 }
 
-export const DRAGON_PERSONALITIES: Record<DragonPersonality, PersonalityTraits> = {
+export const dragonPersonalities: Record<DragonPersonality, PersonalityTraits> = {
   aggressive: {
     name: 'aggressive',
     description: 'Fierce and combative, always ready for battle',
@@ -238,7 +238,7 @@ export interface BondingActivity {
   };
 }
 
-export const BONDING_ACTIVITIES: BondingActivity[] = [
+export const bondingActivities: BondingActivity[] = [
   {
     id: 'feeding',
     name: 'Hand Feeding',

@@ -24,7 +24,7 @@ export interface AchievementRequirement {
   type: string;
   target: number;
   current?: number;
-  conditions?: Record<string, any>;
+  conditions?: Record<string, unknown>;
 }
 
 export interface Achievement {
@@ -473,7 +473,7 @@ export class AchievementSystem {
     });
   }
   
-  checkAchievements(gameState: any): Achievement[] {
+  checkAchievements(gameState: AchievementGameState): Achievement[] {
     const newlyCompleted: Achievement[] = [];
     
     for (const [id, achievement] of this.achievements) {
@@ -497,7 +497,7 @@ export class AchievementSystem {
     return newlyCompleted;
   }
   
-  private checkUnlockConditions(achievement: Achievement, gameState: any): boolean {
+  private checkUnlockConditions(achievement: Achievement, gameState: AchievementGameState): boolean {
     void gameState;
     // Check prerequisites
     if (achievement.prerequisiteAchievements) {
@@ -517,7 +517,7 @@ export class AchievementSystem {
     return false;
   }
   
-  private calculateProgress(achievement: Achievement, gameState: any): number {
+  private calculateProgress(achievement: Achievement, gameState: AchievementGameState): number {
     let totalProgress = 0;
     const numRequirements = achievement.requirements.length;
     
@@ -530,13 +530,15 @@ export class AchievementSystem {
     return Math.floor(totalProgress / numRequirements);
   }
   
-  private getCurrentValue(requirement: AchievementRequirement, gameState: any): number {
+  private getCurrentValue(requirement: AchievementRequirement, gameState: AchievementGameState): number {
     switch (requirement.type) {
       case 'explorations_completed':
         return gameState.stats?.explorationsCompleted || 0;
       
       case 'locations_discovered':
-        return gameState.discoveredLocations?.size || 0;
+        if (Array.isArray(gameState.discoveredLocations)) return gameState.discoveredLocations.length;
+        if (gameState.discoveredLocations instanceof Set) return gameState.discoveredLocations.size;
+        return 0;
       
       case 'combats_won':
         return gameState.stats?.combatsWon || 0;
@@ -648,7 +650,7 @@ export class AchievementSystem {
   }
   
   // Manual achievement triggering for special cases
-  triggerSpecialAchievement(id: string, gameState: any): boolean {
+  triggerSpecialAchievement(id: string, gameState: AchievementGameState): boolean {
     void gameState;
     const achievement = this.achievements.get(id);
     if (!achievement || achievement.isCompleted) {
@@ -662,4 +664,16 @@ export class AchievementSystem {
     this.completeAchievement(id);
     return true;
   }
+}
+
+export interface AchievementGameState {
+  stats?: {
+    explorationsCompleted?: number;
+    combatsWon?: number;
+    totalGoldEarned?: number;
+    totalPlayTime?: number;
+  };
+  discoveredLocations?: unknown[] | Set<unknown>;
+  totalTreasures?: number;
+  dragons?: unknown[];
 }

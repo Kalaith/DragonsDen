@@ -1,5 +1,7 @@
 // Utility functions for performing game-related calculations
 
+import type { Treasure } from '../types/treasures';
+
 export const calculateGoldEarned = (goldPerClick: number, clicks: number): number => {
     return goldPerClick * clicks;
 };
@@ -16,7 +18,7 @@ export const calculateTotalTreasures = (treasures: Set<string>): number => {
     return treasures.size;
 };
 
-export const calculateUniqueTreasures = (discoveredTreasures: any[]): number => {
+export const calculateUniqueTreasures = (discoveredTreasures: Treasure[]): number => {
     const uniqueTreasures = new Set(discoveredTreasures.map(treasure => treasure.name));
     return uniqueTreasures.size;
 };

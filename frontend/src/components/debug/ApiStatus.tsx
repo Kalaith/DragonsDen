@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../api';
-import { API_CONFIG } from '../../config/api';
+import { apiConfig } from '../../config/api';
 
 interface ApiStatusProps {
   className?: string;
@@ -30,7 +30,7 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = '' }) => {
       
       setStatus({
         connected: true,
-        message: `Connected to ${API_CONFIG.BACKEND_BASE_URL}`,
+        message: `Connected to ${apiConfig.BACKEND_BASE_URL}`,
         timestamp: new Date().toLocaleTimeString()
       });
     } catch (error) {
@@ -86,7 +86,7 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = '' }) => {
       
       {process.env.NODE_ENV === 'development' && (
         <div className="mt-2 text-xs text-gray-600 border-t border-gray-200 pt-2">
-          <p><strong>Backend URL:</strong> {API_CONFIG.BACKEND_BASE_URL}</p>
+          <p><strong>Backend URL:</strong> {apiConfig.BACKEND_BASE_URL}</p>
           <p><strong>Environment:</strong> {process.env.NODE_ENV}</p>
         </div>
       )}

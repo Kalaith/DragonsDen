@@ -1,6 +1,6 @@
 import { DragonAbility, ElementType, DragonAbilityType } from '../types/dragons';
 
-export const DRAGON_ABILITIES: Record<string, DragonAbility> = {
+export const dragonAbilities: Record<string, DragonAbility> = {
   // Fire Element Abilities
   flame_breath: {
     id: 'flame_breath',
@@ -313,11 +313,11 @@ export const DRAGON_ABILITIES: Record<string, DragonAbility> = {
 };
 
 export function getAbilitiesByElement(element: ElementType): DragonAbility[] {
-  return Object.values(DRAGON_ABILITIES).filter(ability => ability.elementType === element);
+  return Object.values(dragonAbilities).filter(ability => ability.elementType === element);
 }
 
 export function getAbilitiesByType(type: DragonAbilityType): DragonAbility[] {
-  return Object.values(DRAGON_ABILITIES).filter(ability => ability.type === type);
+  return Object.values(dragonAbilities).filter(ability => ability.type === type);
 }
 
 export function getAvailableAbilities(element: ElementType, level: number): DragonAbility[] {

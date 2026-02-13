@@ -1,5 +1,5 @@
 // Game Balance Constants
-export const GAME_CONSTANTS = {
+export const gameConstants = {
   PRESTIGE_REQUIREMENT: 1000000, // 1M gold
   MINION_BASE_COST: 50,
   MINION_COST_MULTIPLIER: 1.2,

@@ -10,7 +10,7 @@ const getBackendUrl = () => {
   return url;
 };
 
-export const API_CONFIG = {
+export const apiConfig = {
   // Backend server configuration
   BACKEND_BASE_URL: getBackendUrl(),
   
@@ -41,7 +41,7 @@ export const API_CONFIG = {
 
 // Helper function to get full API URL
 export function getApiUrl(endpoint: string): string {
-  return `${API_CONFIG.BACKEND_BASE_URL}${endpoint}`;
+  return `${apiConfig.BACKEND_BASE_URL}${endpoint}`;
 }
 
 // Helper function to replace URL parameters
