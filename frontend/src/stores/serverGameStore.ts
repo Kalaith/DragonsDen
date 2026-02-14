@@ -266,7 +266,7 @@ export const useServerGameStore = create<ServerGameStore>()(
           const result = await apiClient.sendMinions();
 
           if (result.success) {
-            const actualEarnings = parseFloat(result.gold_earned);
+            const actualEarnings = toNumber(result.gold_earned);
 
             // Adjust for difference between estimate and actual
             set(state => ({
