@@ -1,4 +1,4 @@
-import { Dragon, DragonAge, DragonStats } from "../types/dragons";
+import { Dragon, DragonAge, DragonStats } from '../types/dragons';
 
 export interface AgeRequirements {
   experience: number;
@@ -84,11 +84,11 @@ export const ageModifiers: Record<DragonAge, AgeModifiers> = {
       health: 0.4,
       loyalty: 1.5,
     },
-    specialAbilities: ["curiosity", "rapid_learning"],
+    specialAbilities: ['curiosity', 'rapid_learning'],
     appearance: {
       sizeMultiplier: 0.3,
       colorIntensity: 0.7,
-      specialFeatures: ["baby_eyes", "soft_scales"],
+      specialFeatures: ['baby_eyes', 'soft_scales'],
     },
     behaviorChanges: {
       wisdomGain: 0.5,
@@ -107,11 +107,11 @@ export const ageModifiers: Record<DragonAge, AgeModifiers> = {
       health: 0.7,
       loyalty: 1.3,
     },
-    specialAbilities: ["playful_energy", "growth_spurt"],
+    specialAbilities: ['playful_energy', 'growth_spurt'],
     appearance: {
       sizeMultiplier: 0.6,
       colorIntensity: 0.85,
-      specialFeatures: ["developing_horns", "bright_eyes"],
+      specialFeatures: ['developing_horns', 'bright_eyes'],
     },
     behaviorChanges: {
       wisdomGain: 0.8,
@@ -130,11 +130,11 @@ export const ageModifiers: Record<DragonAge, AgeModifiers> = {
       health: 1.0,
       loyalty: 1.0,
     },
-    specialAbilities: ["prime_strength", "balanced_power"],
+    specialAbilities: ['prime_strength', 'balanced_power'],
     appearance: {
       sizeMultiplier: 1.0,
       colorIntensity: 1.0,
-      specialFeatures: ["full_horns", "mature_scales"],
+      specialFeatures: ['full_horns', 'mature_scales'],
     },
     behaviorChanges: {
       wisdomGain: 1.0,
@@ -153,15 +153,11 @@ export const ageModifiers: Record<DragonAge, AgeModifiers> = {
       health: 1.3,
       loyalty: 1.2,
     },
-    specialAbilities: [
-      "elder_wisdom",
-      "experienced_fighter",
-      "magical_mastery",
-    ],
+    specialAbilities: ['elder_wisdom', 'experienced_fighter', 'magical_mastery'],
     appearance: {
       sizeMultiplier: 1.4,
       colorIntensity: 1.2,
-      specialFeatures: ["battle_scars", "wise_eyes", "ornate_horns"],
+      specialFeatures: ['battle_scars', 'wise_eyes', 'ornate_horns'],
     },
     behaviorChanges: {
       wisdomGain: 1.5,
@@ -181,20 +177,15 @@ export const ageModifiers: Record<DragonAge, AgeModifiers> = {
       loyalty: 1.5,
     },
     specialAbilities: [
-      "ancient_power",
-      "timeless_wisdom",
-      "elemental_mastery",
-      "legendary_presence",
+      'ancient_power',
+      'timeless_wisdom',
+      'elemental_mastery',
+      'legendary_presence',
     ],
     appearance: {
       sizeMultiplier: 2.0,
       colorIntensity: 1.5,
-      specialFeatures: [
-        "glowing_runes",
-        "crystalline_scales",
-        "ethereal_aura",
-        "crown_spikes",
-      ],
+      specialFeatures: ['glowing_runes', 'crystalline_scales', 'ethereal_aura', 'crown_spikes'],
     },
     behaviorChanges: {
       wisdomGain: 2.0,
@@ -222,8 +213,7 @@ export class DragonAgingSystem {
     if (requirements.specialRequirements) {
       const special = requirements.specialRequirements;
 
-      if (special.bonding && dragon.traits.bonding < special.bonding)
-        return false;
+      if (special.bonding && dragon.traits.bonding < special.bonding) return false;
       // Note: victories, treasuresFound, locationsExplored would need to be tracked in dragon stats
     }
 
@@ -240,13 +230,10 @@ export class DragonAgingSystem {
     // Calculate new stats by removing old age modifiers and applying new ones
     const newStats: DragonStats = { ...dragon.stats };
 
-    Object.keys(newStats).forEach((statKey) => {
+    Object.keys(newStats).forEach(statKey => {
       const key = statKey as keyof DragonStats;
-      const baseValue =
-        newStats[key] / (oldModifiers.statMultipliers[key] || 1);
-      newStats[key] = Math.round(
-        baseValue * (newModifiers.statMultipliers[key] || 1),
-      );
+      const baseValue = newStats[key] / (oldModifiers.statMultipliers[key] || 1);
+      newStats[key] = Math.round(baseValue * (newModifiers.statMultipliers[key] || 1));
     });
 
     // Update appearance
@@ -258,10 +245,7 @@ export class DragonAgingSystem {
           ageModifiers[dragon.traits.age].appearance.sizeMultiplier),
       specialFeatures: [
         ...dragon.appearance.specialFeatures.filter(
-          (f) =>
-            !ageModifiers[
-              dragon.traits.age
-            ].appearance.specialFeatures.includes(f),
+          f => !ageModifiers[dragon.traits.age].appearance.specialFeatures.includes(f)
         ),
         ...newModifiers.appearance.specialFeatures,
       ],
@@ -284,17 +268,10 @@ export class DragonAgingSystem {
   }
 
   static getNextAge(currentAge: DragonAge): DragonAge | null {
-    const ageOrder: DragonAge[] = [
-      "hatchling",
-      "juvenile",
-      "adult",
-      "elder",
-      "ancient",
-    ];
+    const ageOrder: DragonAge[] = ['hatchling', 'juvenile', 'adult', 'elder', 'ancient'];
     const currentIndex = ageOrder.indexOf(currentAge);
 
-    if (currentIndex === -1 || currentIndex === ageOrder.length - 1)
-      return null;
+    if (currentIndex === -1 || currentIndex === ageOrder.length - 1) return null;
 
     return ageOrder[currentIndex + 1];
   }
@@ -311,27 +288,23 @@ export class DragonAgingSystem {
     return bonusLevels[age];
   }
 
-  static calculateExperienceGain(
-    dragon: Dragon,
-    activity: string,
-    success: boolean,
-  ): number {
+  static calculateExperienceGain(dragon: Dragon, activity: string, success: boolean): number {
     let baseExp = 0;
 
     switch (activity) {
-      case "combat_victory":
+      case 'combat_victory':
         baseExp = 100;
         break;
-      case "exploration":
+      case 'exploration':
         baseExp = 25;
         break;
-      case "treasure_found":
+      case 'treasure_found':
         baseExp = 50;
         break;
-      case "training":
+      case 'training':
         baseExp = 15;
         break;
-      case "bonding":
+      case 'bonding':
         baseExp = 10;
         break;
       default:
@@ -359,12 +332,11 @@ export class DragonAgingSystem {
 
   static getAgeDescription(age: DragonAge): string {
     const descriptions = {
-      hatchling:
-        "A young dragon, full of curiosity and energy, learning about the world.",
-      juvenile: "A growing dragon, developing their abilities and personality.",
-      adult: "A mature dragon at the peak of their physical capabilities.",
-      elder: "A seasoned dragon with great wisdom and magical power.",
-      ancient: "A legendary dragon of immense power and unfathomable wisdom.",
+      hatchling: 'A young dragon, full of curiosity and energy, learning about the world.',
+      juvenile: 'A growing dragon, developing their abilities and personality.',
+      adult: 'A mature dragon at the peak of their physical capabilities.',
+      elder: 'A seasoned dragon with great wisdom and magical power.',
+      ancient: 'A legendary dragon of immense power and unfathomable wisdom.',
     };
 
     return descriptions[age];
@@ -375,7 +347,7 @@ export class DragonAgingSystem {
     requirements: string[];
   } {
     const nextAge = this.getNextAge(dragon.traits.age);
-    if (!nextAge) return { hours: 0, requirements: ["Already at maximum age"] };
+    if (!nextAge) return { hours: 0, requirements: ['Already at maximum age'] };
 
     const requirements = ageRequirements[nextAge];
     const currentTime = Date.now();
@@ -386,25 +358,21 @@ export class DragonAgingSystem {
 
     if (dragon.traits.experience < requirements.experience) {
       missingRequirements.push(
-        `${requirements.experience - dragon.traits.experience} more experience`,
+        `${requirements.experience - dragon.traits.experience} more experience`
       );
     }
 
     if (requirements.specialRequirements) {
       const special = requirements.specialRequirements;
       if (special.bonding && dragon.traits.bonding < special.bonding) {
-        missingRequirements.push(
-          `${special.bonding - dragon.traits.bonding} more bonding`,
-        );
+        missingRequirements.push(`${special.bonding - dragon.traits.bonding} more bonding`);
       }
     }
 
     return {
       hours: timeRemaining,
       requirements:
-        missingRequirements.length > 0
-          ? missingRequirements
-          : ["Time requirement only"],
+        missingRequirements.length > 0 ? missingRequirements : ['Time requirement only'],
     };
   }
 }

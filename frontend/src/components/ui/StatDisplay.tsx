@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 interface StatDisplayProps {
   icon: string;
@@ -13,7 +13,7 @@ export const StatDisplay: React.FC<StatDisplayProps> = ({
   icon,
   label,
   value,
-  color = "text-gray-800",
+  color = 'text-gray-800',
   showChange = false,
 }) => {
   const [previousValue, setPreviousValue] = useState(value);
@@ -22,12 +22,10 @@ export const StatDisplay: React.FC<StatDisplayProps> = ({
   useEffect(() => {
     if (showChange && previousValue !== value) {
       const numValue =
-        typeof value === "string"
-          ? parseFloat(value.replace(/[^0-9.-]/g, ""))
-          : value;
+        typeof value === 'string' ? parseFloat(value.replace(/[^0-9.-]/g, '')) : value;
       const numPrevious =
-        typeof previousValue === "string"
-          ? parseFloat(previousValue.toString().replace(/[^0-9.-]/g, ""))
+        typeof previousValue === 'string'
+          ? parseFloat(previousValue.toString().replace(/[^0-9.-]/g, ''))
           : previousValue;
 
       if (numValue > numPrevious) {
@@ -41,7 +39,7 @@ export const StatDisplay: React.FC<StatDisplayProps> = ({
   return (
     <motion.div
       className={`flex items-center justify-between py-2 px-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors ${
-        isIncreasing ? "ring-2 ring-green-400 ring-opacity-50" : ""
+        isIncreasing ? 'ring-2 ring-green-400 ring-opacity-50' : ''
       }`}
       whileHover={{ scale: 1.02 }}
       animate={isIncreasing ? { scale: [1, 1.05, 1] } : {}}
@@ -58,7 +56,7 @@ export const StatDisplay: React.FC<StatDisplayProps> = ({
         <span className="text-sm font-medium text-gray-600">{label}</span>
       </div>
       <motion.span
-        className={`font-bold ${color} ${isIncreasing ? "text-green-600" : ""}`}
+        className={`font-bold ${color} ${isIncreasing ? 'text-green-600' : ''}`}
         key={value} // This will trigger animation on value change
         initial={{ scale: 1 }}
         animate={{ scale: isIncreasing ? [1, 1.2, 1] : 1 }}

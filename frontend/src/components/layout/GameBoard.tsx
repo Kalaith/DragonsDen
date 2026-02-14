@@ -1,9 +1,9 @@
-import React from "react";
-import { ResourceCounter } from "../game/ResourceCounter";
-import { ActionButtons } from "../game/ActionButtons";
-import { TreasureCollection } from "../game/TreasureCollection";
-import { UpgradeShop } from "../game/UpgradeShop";
-import { GameEvents } from "../game/GameEvents";
+import React from 'react';
+import { ResourceCounter } from '../game/ResourceCounter';
+import { ActionButtons } from '../game/ActionButtons';
+import { TreasureCollection } from '../game/TreasureCollection';
+import { UpgradeShop } from '../game/UpgradeShop';
+import { GameEvents } from '../game/GameEvents';
 
 export const GameBoard: React.FC = () => {
   return (

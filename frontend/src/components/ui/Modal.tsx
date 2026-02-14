@@ -1,5 +1,5 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,13 +9,7 @@ interface ModalProps {
   children: React.ReactNode;
 }
 
-const Modal: React.FC<ModalProps> = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  title,
-  children,
-}) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onConfirm, title, children }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -31,7 +25,7 @@ const Modal: React.FC<ModalProps> = ({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             <h2 className="text-xl font-bold mb-4">{title}</h2>
             <div className="mb-6">{children}</div>

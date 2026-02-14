@@ -1,20 +1,14 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { Dragon, BreedingPair } from "../types/dragons";
-import { WorldLocation, WeatherSystem, RivalDragonLord } from "../types/world";
-import {
-  AchievementSystem,
-  type Achievement,
-} from "../systems/achievementSystem";
-import { WeatherSystemManager } from "../systems/weatherSystem";
-import { WorldGenerator } from "../systems/worldGeneration";
-import { DragonAgingSystem } from "../systems/dragonAging";
-import {
-  RuinsExplorationSystem,
-  type ExplorationResult,
-} from "../systems/ruinsExploration";
-import { getBondingDecayRate } from "../data/dragonPersonalities";
-import type { BattleFormation } from "../types/combat";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { Dragon, BreedingPair } from '../types/dragons';
+import { WorldLocation, WeatherSystem, RivalDragonLord } from '../types/world';
+import { AchievementSystem, type Achievement } from '../systems/achievementSystem';
+import { WeatherSystemManager } from '../systems/weatherSystem';
+import { WorldGenerator } from '../systems/worldGeneration';
+import { DragonAgingSystem } from '../systems/dragonAging';
+import { RuinsExplorationSystem, type ExplorationResult } from '../systems/ruinsExploration';
+import { getBondingDecayRate } from '../data/dragonPersonalities';
+import type { BattleFormation } from '../types/combat';
 
 interface DragonGameState {
   // Dragons
@@ -99,12 +93,12 @@ interface DragonStorePersistedState {
   ancientKnowledge: number;
   magicalComponents: Record<string, number>;
   artifacts: string[];
-  stats: DragonGameState["stats"];
+  stats: DragonGameState['stats'];
   lastUpdate: number;
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
+  typeof value === 'object' && value !== null;
 
 interface DragonStore extends DragonGameState {
   // Dragon Management
@@ -126,17 +120,14 @@ interface DragonStore extends DragonGameState {
   completeExploration: () => ExplorationCompletionResult | null;
 
   // Combat & Encounters
-  engageCombat: (
-    enemies: Dragon[],
-    formation?: BattleFormation,
-  ) => CombatOutcome;
+  engageCombat: (enemies: Dragon[], formation?: BattleFormation) => CombatOutcome;
   encounterRivalLord: (rivalId: string) => RivalEncounter;
 
   // Ruins Exploration
   exploreRuin: (
     ruinId: string,
     floorIndex: number,
-    choices: Record<string, unknown>,
+    choices: Record<string, unknown>
   ) => ExplorationResult | null;
 
   // Resource Management
@@ -170,7 +161,7 @@ const createInitialState = (): DragonGameState => ({
 
   // Weather
   currentWeather: {
-    current: "clear",
+    current: 'clear',
     duration: 120,
     effects: {
       explorationSpeed: 1.0,
@@ -190,7 +181,7 @@ const createInitialState = (): DragonGameState => ({
   // Player Progress
   playerLevel: 1,
   experience: 0,
-  unlockedFeatures: new Set(["basic_exploration", "dragon_bonding"]),
+  unlockedFeatures: new Set(['basic_exploration', 'dragon_bonding']),
   completedTutorials: new Set(),
 
   // Resources
@@ -224,7 +215,7 @@ export const useDragonStore = create<DragonStore>()(
 
       // Dragon Management
       addDragon: (dragon: Dragon) => {
-        set((state) => ({
+        set(state => ({
           dragons: [...state.dragons, dragon],
           stats: {
             ...state.stats,
@@ -234,17 +225,15 @@ export const useDragonStore = create<DragonStore>()(
       },
 
       removeDragon: (dragonId: string) => {
-        set((state) => ({
-          dragons: state.dragons.filter((d) => d.id !== dragonId),
-          activeDragons: state.activeDragons.filter((id) => id !== dragonId),
+        set(state => ({
+          dragons: state.dragons.filter(d => d.id !== dragonId),
+          activeDragons: state.activeDragons.filter(id => id !== dragonId),
         }));
       },
 
       updateDragon: (dragonId: string, updates: Partial<Dragon>) => {
-        set((state) => ({
-          dragons: state.dragons.map((d) =>
-            d.id === dragonId ? { ...d, ...updates } : d,
-          ),
+        set(state => ({
+          dragons: state.dragons.map(d => (d.id === dragonId ? { ...d, ...updates } : d)),
         }));
       },
 
@@ -303,10 +292,8 @@ export const useDragonStore = create<DragonStore>()(
             100,
             80 -
               Math.abs(parent1.traits.bonding - parent2.traits.bonding) +
-              (parent1.traits.primaryElement === parent2.traits.primaryElement
-                ? 20
-                : 0),
-          ),
+              (parent1.traits.primaryElement === parent2.traits.primaryElement ? 20 : 0)
+          )
         );
 
         const breedingPair: BreedingPair = {
@@ -316,13 +303,9 @@ export const useDragonStore = create<DragonStore>()(
           estimatedHatchTime: 24 - compatibility / 10, // 14-24 hours based on compatibility
           possibleTraits: {
             primaryElement:
-              Math.random() < 0.7
-                ? parent1.traits.primaryElement
-                : parent2.traits.primaryElement,
+              Math.random() < 0.7 ? parent1.traits.primaryElement : parent2.traits.primaryElement,
             personality:
-              Math.random() < 0.5
-                ? parent1.traits.personality
-                : parent2.traits.personality,
+              Math.random() < 0.5 ? parent1.traits.personality : parent2.traits.personality,
           },
         };
 
@@ -370,9 +353,9 @@ export const useDragonStore = create<DragonStore>()(
       },
 
       discoverLocation: (locationId: string) => {
-        set((state) => ({
-          discoveredLocations: state.discoveredLocations.map((loc) =>
-            loc.id === locationId ? { ...loc, discovered: true } : loc,
+        set(state => ({
+          discoveredLocations: state.discoveredLocations.map(loc =>
+            loc.id === locationId ? { ...loc, discovered: true } : loc
           ),
           stats: {
             ...state.stats,
@@ -383,19 +366,15 @@ export const useDragonStore = create<DragonStore>()(
 
       startExploration: (locationId: string, dragonIds: string[]) => {
         const state = get();
-        const location = state.discoveredLocations.find(
-          (l) => l.id === locationId,
-        );
-        const dragons = dragonIds
-          .map((id) => state.getDragon(id))
-          .filter(Boolean);
+        const location = state.discoveredLocations.find(l => l.id === locationId);
+        const dragons = dragonIds.map(id => state.getDragon(id)).filter(Boolean);
 
         if (!location || dragons.length === 0) {
           return false;
         }
 
         // Check if dragons meet location requirements
-        const maxLevel = Math.max(...dragons.map((d) => d!.traits.level));
+        const maxLevel = Math.max(...dragons.map(d => d!.traits.level));
         if (maxLevel < location.requiredLevel) {
           return false;
         }
@@ -410,8 +389,7 @@ export const useDragonStore = create<DragonStore>()(
           legendary: 180,
         }[location.difficulty];
 
-        const weatherModifier =
-          state.weatherSystem.getWeatherEffect("explorationSpeed");
+        const weatherModifier = state.weatherSystem.getWeatherEffect('explorationSpeed');
         const explorationTime = Math.round(baseTime * weatherModifier);
 
         set({
@@ -430,9 +408,7 @@ export const useDragonStore = create<DragonStore>()(
           return null;
         }
 
-        const location = state.discoveredLocations.find(
-          (l) => l.id === state.currentLocation,
-        );
+        const location = state.discoveredLocations.find(l => l.id === state.currentLocation);
         const dragons = state.getActiveDragons();
 
         if (!location || dragons.length === 0) {
@@ -450,19 +426,14 @@ export const useDragonStore = create<DragonStore>()(
 
         // Update location progress
         const progressGain = Math.floor(Math.random() * 20) + 10;
-        const newProgress = Math.min(
-          100,
-          location.explorationProgress + progressGain,
-        );
+        const newProgress = Math.min(100, location.explorationProgress + progressGain);
 
-        set((state) => ({
+        set(state => ({
           explorationInProgress: false,
           explorationTimeLeft: 0,
           currentLocation: null,
-          discoveredLocations: state.discoveredLocations.map((loc) =>
-            loc.id === state.currentLocation
-              ? { ...loc, explorationProgress: newProgress }
-              : loc,
+          discoveredLocations: state.discoveredLocations.map(loc =>
+            loc.id === state.currentLocation ? { ...loc, explorationProgress: newProgress } : loc
           ),
           stats: {
             ...state.stats,
@@ -483,7 +454,7 @@ export const useDragonStore = create<DragonStore>()(
         const victory = Math.random() < 0.6; // 60% win rate placeholder
 
         if (victory) {
-          set((state) => ({
+          set(state => ({
             stats: {
               ...state.stats,
               combatsWon: state.stats.combatsWon + 1,
@@ -493,7 +464,7 @@ export const useDragonStore = create<DragonStore>()(
 
         return {
           victory,
-          rewards: victory ? ["combat_experience", "battle_trophy"] : [],
+          rewards: victory ? ['combat_experience', 'battle_trophy'] : [],
         };
       },
 
@@ -501,40 +472,29 @@ export const useDragonStore = create<DragonStore>()(
         // Placeholder for rival encounters
         void rivalId;
         return {
-          type: "greeting",
-          message: "A rival dragon lord approaches...",
+          type: 'greeting',
+          message: 'A rival dragon lord approaches...',
         };
       },
 
       // Ruins Exploration
-      exploreRuin: (
-        ruinId: string,
-        floorIndex: number,
-        choices: Record<string, unknown>,
-      ) => {
+      exploreRuin: (ruinId: string, floorIndex: number, choices: Record<string, unknown>) => {
         const state = get();
-        const location = state.discoveredLocations.find((l) =>
-          l.encounters.ancientRuins.some((r) => r.id === ruinId),
+        const location = state.discoveredLocations.find(l =>
+          l.encounters.ancientRuins.some(r => r.id === ruinId)
         );
 
         if (!location) return null;
 
-        const ruin = location.encounters.ancientRuins.find(
-          (r) => r.id === ruinId,
-        );
+        const ruin = location.encounters.ancientRuins.find(r => r.id === ruinId);
         if (!ruin) return null;
 
         const dragons = state.getActiveDragons();
-        const result = RuinsExplorationSystem.exploreFloor(
-          ruin,
-          floorIndex,
-          dragons,
-          choices,
-        );
+        const result = RuinsExplorationSystem.exploreFloor(ruin, floorIndex, dragons, choices);
 
         if (result.success && floorIndex === ruin.floors.length - 1) {
           // Completed entire ruin
-          set((state) => ({
+          set(state => ({
             stats: {
               ...state.stats,
               ruinsCompleted: state.stats.ruinsCompleted + 1,
@@ -550,13 +510,13 @@ export const useDragonStore = create<DragonStore>()(
         const state = get();
 
         switch (resourceType) {
-          case "dragonEssence":
+          case 'dragonEssence':
             if (state.dragonEssence >= amount) {
               set({ dragonEssence: state.dragonEssence - amount });
               return true;
             }
             break;
-          case "ancientKnowledge":
+          case 'ancientKnowledge':
             if (state.ancientKnowledge >= amount) {
               set({ ancientKnowledge: state.ancientKnowledge - amount });
               return true;
@@ -564,11 +524,10 @@ export const useDragonStore = create<DragonStore>()(
             break;
           default:
             if (state.magicalComponents[resourceType] >= amount) {
-              set((state) => ({
+              set(state => ({
                 magicalComponents: {
                   ...state.magicalComponents,
-                  [resourceType]:
-                    state.magicalComponents[resourceType] - amount,
+                  [resourceType]: state.magicalComponents[resourceType] - amount,
                 },
               }));
               return true;
@@ -580,20 +539,19 @@ export const useDragonStore = create<DragonStore>()(
 
       addResource: (resourceType: string, amount: number) => {
         switch (resourceType) {
-          case "dragonEssence":
-            set((state) => ({ dragonEssence: state.dragonEssence + amount }));
+          case 'dragonEssence':
+            set(state => ({ dragonEssence: state.dragonEssence + amount }));
             break;
-          case "ancientKnowledge":
-            set((state) => ({
+          case 'ancientKnowledge':
+            set(state => ({
               ancientKnowledge: state.ancientKnowledge + amount,
             }));
             break;
           default:
-            set((state) => ({
+            set(state => ({
               magicalComponents: {
                 ...state.magicalComponents,
-                [resourceType]:
-                  (state.magicalComponents[resourceType] || 0) + amount,
+                [resourceType]: (state.magicalComponents[resourceType] || 0) + amount,
               },
             }));
         }
@@ -604,7 +562,7 @@ export const useDragonStore = create<DragonStore>()(
         const state = get();
 
         // Update play time
-        set((state) => ({
+        set(state => ({
           stats: {
             ...state.stats,
             totalPlayTime: state.stats.totalPlayTime + deltaTime,
@@ -616,11 +574,8 @@ export const useDragonStore = create<DragonStore>()(
         state.weatherSystem.updateWeather(deltaTime, currentLocation?.biome);
 
         // Update dragon bonding decay
-        const updatedDragons = state.dragons.map((dragon) => {
-          const decay = getBondingDecayRate(
-            dragon.traits.personality,
-            dragon.lastActive,
-          );
+        const updatedDragons = state.dragons.map(dragon => {
+          const decay = getBondingDecayRate(dragon.traits.personality, dragon.lastActive);
           const newBonding = Math.max(0, dragon.traits.bonding - decay);
 
           return {
@@ -631,10 +586,7 @@ export const useDragonStore = create<DragonStore>()(
 
         // Update exploration timer
         if (state.explorationInProgress && state.explorationTimeLeft > 0) {
-          const newTimeLeft = Math.max(
-            0,
-            state.explorationTimeLeft - deltaTime / 1000,
-          );
+          const newTimeLeft = Math.max(0, state.explorationTimeLeft - deltaTime / 1000);
           set({ explorationTimeLeft: newTimeLeft });
 
           if (newTimeLeft === 0) {
@@ -644,10 +596,7 @@ export const useDragonStore = create<DragonStore>()(
 
         // Update incubation timer
         if (state.eggIncubating && state.incubationTimeLeft > 0) {
-          const newTimeLeft = Math.max(
-            0,
-            state.incubationTimeLeft - deltaTime / 60000,
-          ); // Convert ms to minutes
+          const newTimeLeft = Math.max(0, state.incubationTimeLeft - deltaTime / 60000); // Convert ms to minutes
           set({ incubationTimeLeft: newTimeLeft });
 
           if (newTimeLeft === 0) {
@@ -673,11 +622,10 @@ export const useDragonStore = create<DragonStore>()(
         });
 
         if (newAchievements.length > 0) {
-          set((state) => ({
+          set(state => ({
             stats: {
               ...state.stats,
-              achievementsCompleted:
-                state.stats.achievementsCompleted + newAchievements.length,
+              achievementsCompleted: state.stats.achievementsCompleted + newAchievements.length,
             },
           }));
         }
@@ -687,22 +635,18 @@ export const useDragonStore = create<DragonStore>()(
 
       // Utilities
       getDragon: (dragonId: string) => {
-        return get().dragons.find((d) => d.id === dragonId);
+        return get().dragons.find(d => d.id === dragonId);
       },
 
       getActiveDragons: () => {
         const state = get();
-        return state.activeDragons
-          .map((id) => state.getDragon(id))
-          .filter(Boolean) as Dragon[];
+        return state.activeDragons.map(id => state.getDragon(id)).filter(Boolean) as Dragon[];
       },
 
       getCurrentLocation: () => {
         const state = get();
         return state.currentLocation
-          ? state.discoveredLocations.find(
-              (l) => l.id === state.currentLocation,
-            )
+          ? state.discoveredLocations.find(l => l.id === state.currentLocation)
           : undefined;
       },
 
@@ -711,15 +655,14 @@ export const useDragonStore = create<DragonStore>()(
 
         for (const [resource, amount] of Object.entries(costs)) {
           switch (resource) {
-            case "dragonEssence":
+            case 'dragonEssence':
               if (state.dragonEssence < amount) return false;
               break;
-            case "ancientKnowledge":
+            case 'ancientKnowledge':
               if (state.ancientKnowledge < amount) return false;
               break;
             default:
-              if ((state.magicalComponents[resource] || 0) < amount)
-                return false;
+              if ((state.magicalComponents[resource] || 0) < amount) return false;
           }
         }
 
@@ -727,8 +670,8 @@ export const useDragonStore = create<DragonStore>()(
       },
     }),
     {
-      name: "dragon-den-enhanced",
-      partialize: (state) => ({
+      name: 'dragon-den-enhanced',
+      partialize: state => ({
         dragons: state.dragons,
         activeDragons: state.activeDragons,
         discoveredLocations: state.discoveredLocations,
@@ -756,74 +699,51 @@ export const useDragonStore = create<DragonStore>()(
         const ps = persistedState as Partial<DragonStorePersistedState>;
 
         const unlockedFeatures = Array.isArray(ps.unlockedFeatures)
-          ? ps.unlockedFeatures.filter(
-              (v): v is string => typeof v === "string",
-            )
+          ? ps.unlockedFeatures.filter((v): v is string => typeof v === 'string')
           : [];
 
         const completedTutorials = Array.isArray(ps.completedTutorials)
-          ? ps.completedTutorials.filter(
-              (v): v is string => typeof v === "string",
-            )
+          ? ps.completedTutorials.filter((v): v is string => typeof v === 'string')
           : [];
 
         const magicalComponents = isRecord(ps.magicalComponents)
           ? Object.fromEntries(
-              Object.entries(ps.magicalComponents).filter(
-                ([, v]) => typeof v === "number",
-              ),
+              Object.entries(ps.magicalComponents).filter(([, v]) => typeof v === 'number')
             )
           : currentState.magicalComponents;
 
         return {
           ...currentState,
-          dragons: Array.isArray(ps.dragons)
-            ? (ps.dragons as Dragon[])
-            : currentState.dragons,
+          dragons: Array.isArray(ps.dragons) ? (ps.dragons as Dragon[]) : currentState.dragons,
           activeDragons: Array.isArray(ps.activeDragons)
-            ? ps.activeDragons.filter((v): v is string => typeof v === "string")
+            ? ps.activeDragons.filter((v): v is string => typeof v === 'string')
             : currentState.activeDragons,
           discoveredLocations: Array.isArray(ps.discoveredLocations)
             ? (ps.discoveredLocations as WorldLocation[])
             : currentState.discoveredLocations,
-          worldSeed:
-            typeof ps.worldSeed === "string"
-              ? ps.worldSeed
-              : currentState.worldSeed,
+          worldSeed: typeof ps.worldSeed === 'string' ? ps.worldSeed : currentState.worldSeed,
           playerLevel:
-            typeof ps.playerLevel === "number"
-              ? ps.playerLevel
-              : currentState.playerLevel,
-          experience:
-            typeof ps.experience === "number"
-              ? ps.experience
-              : currentState.experience,
+            typeof ps.playerLevel === 'number' ? ps.playerLevel : currentState.playerLevel,
+          experience: typeof ps.experience === 'number' ? ps.experience : currentState.experience,
           unlockedFeatures: new Set(unlockedFeatures),
           completedTutorials: new Set(completedTutorials),
           dragonEssence:
-            typeof ps.dragonEssence === "number"
-              ? ps.dragonEssence
-              : currentState.dragonEssence,
+            typeof ps.dragonEssence === 'number' ? ps.dragonEssence : currentState.dragonEssence,
           ancientKnowledge:
-            typeof ps.ancientKnowledge === "number"
+            typeof ps.ancientKnowledge === 'number'
               ? ps.ancientKnowledge
               : currentState.ancientKnowledge,
           magicalComponents,
           artifacts: Array.isArray(ps.artifacts)
-            ? ps.artifacts.filter((v): v is string => typeof v === "string")
+            ? ps.artifacts.filter((v): v is string => typeof v === 'string')
             : currentState.artifacts,
-          stats: isRecord(ps.stats)
-            ? (ps.stats as DragonGameState["stats"])
-            : currentState.stats,
-          lastUpdate:
-            typeof ps.lastUpdate === "number"
-              ? ps.lastUpdate
-              : currentState.lastUpdate,
+          stats: isRecord(ps.stats) ? (ps.stats as DragonGameState['stats']) : currentState.stats,
+          lastUpdate: typeof ps.lastUpdate === 'number' ? ps.lastUpdate : currentState.lastUpdate,
           // Reinitialize systems on load
           achievementSystem: new AchievementSystem(),
           weatherSystem: new WeatherSystemManager(),
         };
       },
-    },
-  ),
+    }
+  )
 );

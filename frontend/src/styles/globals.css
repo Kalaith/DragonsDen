@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Dragon's Den Custom Styles */
 @layer base {
@@ -11,7 +11,7 @@
 
   body {
     font-family:
-      "Inter",
+      'Inter',
       system-ui,
       -apple-system,
       sans-serif;
@@ -193,10 +193,10 @@
   }
 
   /* Prevent zoom on input focus for iOS */
-  input[type="text"],
-  input[type="number"],
-  input[type="email"],
-  input[type="password"],
+  input[type='text'],
+  input[type='number'],
+  input[type='email'],
+  input[type='password'],
   textarea,
   select {
     font-size: 16px;

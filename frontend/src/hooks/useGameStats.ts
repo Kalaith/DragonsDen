@@ -1,4 +1,4 @@
-import { useGameStore } from "../stores/gameStore";
+import { useGameStore } from '../stores/gameStore';
 
 export interface GameStat {
   icon: string;
@@ -21,55 +21,55 @@ export const useGameStats = () => {
   } = useGameStore();
   const stats: GameStat[] = [
     {
-      icon: "💰",
-      label: "Gold",
+      icon: '💰',
+      label: 'Gold',
       value: formatNumber(gold),
-      color: "text-yellow-600",
+      color: 'text-yellow-600',
       showChange: false, // Disable green flash animation for gold
     },
     {
-      icon: "⚡",
-      label: "Gold/sec",
+      icon: '⚡',
+      label: 'Gold/sec',
       value: formatNumber(calculateGoldPerSecond()),
-      color: "text-green-600",
+      color: 'text-green-600',
       showChange: true,
     },
     {
-      icon: "💎",
-      label: "Total Treasures",
+      icon: '💎',
+      label: 'Total Treasures',
       value: totalTreasures,
-      color: "text-blue-600",
+      color: 'text-blue-600',
       showChange: true,
     },
     {
-      icon: "⭐",
-      label: "Unique Treasures",
+      icon: '⭐',
+      label: 'Unique Treasures',
       value: uniqueTreasures.size,
-      color: "text-purple-600",
+      color: 'text-purple-600',
       showChange: true,
     },
     {
-      icon: "👹",
-      label: "Minions",
+      icon: '👹',
+      label: 'Minions',
       value: minions,
-      color: "text-red-600",
+      color: 'text-red-600',
       showChange: true,
     },
     {
-      icon: "🏆",
-      label: "Achievements",
+      icon: '🏆',
+      label: 'Achievements',
       value: achievements.size,
-      color: "text-orange-600",
+      color: 'text-orange-600',
       showChange: true,
     },
   ];
   // Add prestige level if player has prestiged
   if (prestigeLevel > 0) {
     stats.unshift({
-      icon: "🌟",
-      label: "Prestige Level",
+      icon: '🌟',
+      label: 'Prestige Level',
       value: prestigeLevel,
-      color: "text-pink-600",
+      color: 'text-pink-600',
       showChange: false,
     });
   }

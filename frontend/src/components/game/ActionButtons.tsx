@@ -1,7 +1,7 @@
-import React from "react";
-import { ActionButton } from "../ui/ActionButton";
-import { PrestigeCard } from "./PrestigeCard";
-import { useGameActions } from "../../hooks/useGameActions";
+import React from 'react';
+import { ActionButton } from '../ui/ActionButton';
+import { PrestigeCard } from './PrestigeCard';
+import { useGameActions } from '../../hooks/useGameActions';
 
 export const ActionButtons: React.FC = () => {
   const {
@@ -66,11 +66,7 @@ export const ActionButtons: React.FC = () => {
           </div>
         </ActionButton>
 
-        <ActionButton
-          onClick={handleHireMinion}
-          disabled={!canHireMinion}
-          variant="success"
-        >
+        <ActionButton onClick={handleHireMinion} disabled={!canHireMinion} variant="success">
           <div className="text-center">
             <div className="text-xl lg:text-2xl mb-1">🏰</div>
             <div className="text-xs lg:text-sm leading-tight">

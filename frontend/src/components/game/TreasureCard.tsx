@@ -1,29 +1,29 @@
-import React from "react";
-import { Treasure } from "../../types/treasures";
+import React from 'react';
+import { Treasure } from '../../types/treasures';
 
 const getRarityStyles = (rarity: string) => {
   switch (rarity) {
-    case "legendary":
-      return "border-yellow-400 bg-yellow-50 text-yellow-800";
-    case "epic":
-      return "border-purple-400 bg-purple-50 text-purple-800";
-    case "rare":
-      return "border-blue-400 bg-blue-50 text-blue-800";
+    case 'legendary':
+      return 'border-yellow-400 bg-yellow-50 text-yellow-800';
+    case 'epic':
+      return 'border-purple-400 bg-purple-50 text-purple-800';
+    case 'rare':
+      return 'border-blue-400 bg-blue-50 text-blue-800';
     default:
-      return "border-gray-400 bg-gray-50 text-gray-800";
+      return 'border-gray-400 bg-gray-50 text-gray-800';
   }
 };
 
 const getRarityIcon = (rarity: string) => {
   switch (rarity) {
-    case "legendary":
-      return "👑";
-    case "epic":
-      return "💜";
-    case "rare":
-      return "💙";
+    case 'legendary':
+      return '👑';
+    case 'epic':
+      return '💜';
+    case 'rare':
+      return '💙';
     default:
-      return "🤍";
+      return '🤍';
   }
 };
 

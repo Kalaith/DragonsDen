@@ -1,9 +1,9 @@
-import { Header } from "../components/layout/Header";
-import { Sidebar } from "../components/layout/Sidebar";
-import { ApiStatus } from "../components/debug/ApiStatus";
-import { ServerResourceCounter } from "../components/game/ServerResourceCounter";
-import { ServerActionButtons } from "../components/game/ServerActionButtons";
-import { useServerSync } from "../hooks/useServerSync";
+import { Header } from '../components/layout/Header';
+import { Sidebar } from '../components/layout/Sidebar';
+import { ApiStatus } from '../components/debug/ApiStatus';
+import { ServerResourceCounter } from '../components/game/ServerResourceCounter';
+import { ServerActionButtons } from '../components/game/ServerActionButtons';
+import { useServerSync } from '../hooks/useServerSync';
 
 export function GamePage() {
   const { isLoading } = useServerSync();

@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { apiClient } from "../../api";
-import { apiConfig } from "../../config/api";
+import React, { useState, useEffect } from 'react';
+import { apiClient } from '../../api';
+import { apiConfig } from '../../config/api';
 
 interface ApiStatusProps {
   className?: string;
 }
 
-export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
+export const ApiStatus: React.FC<ApiStatusProps> = ({ className = '' }) => {
   const [status, setStatus] = useState<{
     connected: boolean;
     message: string;
     timestamp: string;
   }>({
     connected: false,
-    message: "Checking connection...",
-    timestamp: "",
+    message: 'Checking connection...',
+    timestamp: '',
   });
 
   const testConnection = async () => {
     try {
       setStatus({
         connected: false,
-        message: "Testing connection...",
+        message: 'Testing connection...',
         timestamp: new Date().toLocaleTimeString(),
       });
 
@@ -34,8 +34,7 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
         timestamp: new Date().toLocaleTimeString(),
       });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       setStatus({
         connected: false,
         message: `Connection failed: ${errorMessage}`,
@@ -56,15 +55,13 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
   return (
     <div
       className={`bg-gray-100 rounded-lg p-3 border-l-4 ${
-        status.connected ? "border-green-500" : "border-red-500"
+        status.connected ? 'border-green-500' : 'border-red-500'
       } ${className}`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div
-            className={`w-2 h-2 rounded-full ${
-              status.connected ? "bg-green-500" : "bg-red-500"
-            }`}
+            className={`w-2 h-2 rounded-full ${status.connected ? 'bg-green-500' : 'bg-red-500'}`}
           />
           <span className="text-sm font-medium text-gray-700">API Status</span>
         </div>
@@ -77,15 +74,11 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
       </div>
 
       <div className="mt-1">
-        <p
-          className={`text-xs ${status.connected ? "text-green-700" : "text-red-700"}`}
-        >
+        <p className={`text-xs ${status.connected ? 'text-green-700' : 'text-red-700'}`}>
           {status.message}
         </p>
         {status.timestamp && (
-          <p className="text-xs text-gray-500 mt-1">
-            Last checked: {status.timestamp}
-          </p>
+          <p className="text-xs text-gray-500 mt-1">Last checked: {status.timestamp}</p>
         )}
       </div>
 

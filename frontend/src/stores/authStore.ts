@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 type PersistedAuthState = {
   state?: {
     user?: AuthUser | null;
@@ -12,12 +12,12 @@ const readPersistedAuth = (): {
   token: string | null;
   loginUrl: string | null;
 } => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return { user: null, token: null, loginUrl: null };
   }
 
   try {
-    const raw = window.localStorage.getItem("auth-storage");
+    const raw = window.localStorage.getItem('auth-storage');
     if (!raw) return { user: null, token: null, loginUrl: null };
     const parsed = JSON.parse(raw) as PersistedAuthState;
     return {

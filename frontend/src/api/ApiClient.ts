@@ -1,5 +1,5 @@
-import { apiConfig } from "../config/api";
-import { useAuthStore } from "../stores/authStore";
+import { apiConfig } from '../config/api';
+import { useAuthStore } from '../stores/authStore';
 
 export default class ApiClient {
   private baseUrl: string;
@@ -8,16 +8,11 @@ export default class ApiClient {
     this.baseUrl = baseUrl || apiConfig.BACKEND_BASE_URL;
   }
 
-  private async fetchJson<T = unknown>(
-    endpoint: string,
-    options: RequestInit = {},
-  ): Promise<T> {
-    const url = endpoint.startsWith("http")
-      ? endpoint
-      : `${this.baseUrl}${endpoint}`;
+  private async fetchJson<T = unknown>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
 
     if (apiConfig.LOG_REQUESTS) {
-      console.log(`API Request: ${options.method || "GET"} ${url}`);
+      console.log(`API Request: ${options.method || 'GET'} ${url}`);
     }
 
     const authToken = useAuthStore.getState().token;
@@ -31,17 +26,14 @@ export default class ApiClient {
 
     // Add timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(
-      () => controller.abort(),
-      apiConfig.DEFAULT_TIMEOUT,
-    );
+    const timeoutId = setTimeout(() => controller.abort(), apiConfig.DEFAULT_TIMEOUT);
 
     try {
       const response = await fetch(url, {
         ...options,
         signal: controller.signal,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           ...authHeader,
           ...extraHeaders,
         },
@@ -56,10 +48,10 @@ export default class ApiClient {
           } catch {
             // ignore JSON parse errors for 401
           }
-          throw new Error("Not logged in");
+          throw new Error('Not logged in');
         }
         throw new Error(
-          `API request failed with status ${response.status}: ${response.statusText}`,
+          `API request failed with status ${response.status}: ${response.statusText}`
         );
       }
 
@@ -67,10 +59,8 @@ export default class ApiClient {
       return data as T;
     } catch (error) {
       clearTimeout(timeoutId);
-      if (error instanceof Error && error.name === "AbortError") {
-        throw new Error(
-          `API request timed out after ${apiConfig.DEFAULT_TIMEOUT}ms`,
-        );
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`API request timed out after ${apiConfig.DEFAULT_TIMEOUT}ms`);
       }
       throw error;
     }
@@ -102,31 +92,31 @@ export default class ApiClient {
 
   public async collectGold(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.PLAYER_COLLECT_GOLD, {
-      method: "POST",
+      method: 'POST',
     });
   }
 
   public async sendMinions(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.PLAYER_SEND_MINIONS, {
-      method: "POST",
+      method: 'POST',
     });
   }
 
   public async exploreRuins(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.PLAYER_EXPLORE_RUINS, {
-      method: "POST",
+      method: 'POST',
     });
   }
 
   public async hireGoblin(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.PLAYER_HIRE_GOBLIN, {
-      method: "POST",
+      method: 'POST',
     });
   }
 
   public async prestigePlayer(): Promise<any> {
     return this.fetchJson(apiConfig.ENDPOINTS.PLAYER_PRESTIGE, {
-      method: "POST",
+      method: 'POST',
     });
   }
 
@@ -135,6 +125,6 @@ export default class ApiClient {
   }
 
   public async getAuthSession(): Promise<any> {
-    return this.fetchJson("/api/auth/session");
+    return this.fetchJson('/api/auth/session');
   }
 }

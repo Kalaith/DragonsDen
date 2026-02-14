@@ -1,7 +1,7 @@
-import { useGameStore } from "../stores/gameStore";
-import { useCooldowns } from "./useCooldowns";
-import { gameConstants } from "../constants/gameConstants";
-import { GameActions } from "../types/actions";
+import { useGameStore } from '../stores/gameStore';
+import { useCooldowns } from './useCooldowns';
+import { gameConstants } from '../constants/gameConstants';
+import { GameActions } from '../types/actions';
 
 export const useGameActions = (): GameActions => {
   const {
@@ -19,8 +19,7 @@ export const useGameActions = (): GameActions => {
 
   const { minionCooldown, exploreCooldown } = useCooldowns();
   const hireMinionCost =
-    gameConstants.MINION_BASE_COST *
-    Math.pow(gameConstants.MINION_COST_MULTIPLIER, minions);
+    gameConstants.MINION_BASE_COST * Math.pow(gameConstants.MINION_COST_MULTIPLIER, minions);
   const canPrestige = gold >= gameConstants.PRESTIGE_REQUIREMENT;
 
   const handleCollectGold = () => {
@@ -41,7 +40,7 @@ export const useGameActions = (): GameActions => {
 
   const handleHireMinion = () => {
     if (gold >= hireMinionCost) {
-      buyUpgrade("hireMinionUpgrade");
+      buyUpgrade('hireMinionUpgrade');
     }
   };
 

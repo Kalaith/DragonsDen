@@ -1,39 +1,28 @@
 export type ElementType =
-  | "fire"
-  | "ice"
-  | "earth"
-  | "air"
-  | "shadow"
-  | "light"
-  | "poison"
-  | "lightning";
+  | 'fire'
+  | 'ice'
+  | 'earth'
+  | 'air'
+  | 'shadow'
+  | 'light'
+  | 'poison'
+  | 'lightning';
 
-export type DragonRarity =
-  | "common"
-  | "uncommon"
-  | "rare"
-  | "epic"
-  | "legendary"
-  | "mythic";
+export type DragonRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
 export type DragonPersonality =
-  | "aggressive"
-  | "loyal"
-  | "cunning"
-  | "noble"
-  | "wild"
-  | "ancient"
-  | "playful"
-  | "protective";
+  | 'aggressive'
+  | 'loyal'
+  | 'cunning'
+  | 'noble'
+  | 'wild'
+  | 'ancient'
+  | 'playful'
+  | 'protective';
 
-export type DragonAge =
-  | "hatchling"
-  | "juvenile"
-  | "adult"
-  | "elder"
-  | "ancient";
+export type DragonAge = 'hatchling' | 'juvenile' | 'adult' | 'elder' | 'ancient';
 
-export type DragonAbilityType = "passive" | "active" | "ultimate";
+export type DragonAbilityType = 'passive' | 'active' | 'ultimate';
 
 export interface DragonStats {
   attack: number;

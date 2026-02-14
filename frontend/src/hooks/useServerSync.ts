@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { useServerGameStore } from "../stores/serverGameStore";
+import { useEffect, useRef } from 'react';
+import { useServerGameStore } from '../stores/serverGameStore';
 
 export const useServerSync = () => {
   const {
@@ -35,14 +35,14 @@ export const useServerSync = () => {
       }
     };
 
-    window.addEventListener("focus", handleFocus);
+    window.addEventListener('focus', handleFocus);
 
     // Sync before page unload
     const handleBeforeUnload = () => {
       syncWithServer();
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
       // Cleanup
@@ -52,8 +52,8 @@ export const useServerSync = () => {
         clearInterval(syncIntervalRef.current);
       }
 
-      window.removeEventListener("focus", handleFocus);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
 

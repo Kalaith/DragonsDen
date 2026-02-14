@@ -1,18 +1,16 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { apiClient } from "../api";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { apiClient } from '../api';
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
+  typeof value === 'object' && value !== null;
 
 const toStringArray = (value: unknown): string[] =>
-  Array.isArray(value)
-    ? value.filter((v): v is string => typeof v === "string")
-    : [];
+  Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string') : [];
 
 const toNumber = (value: unknown): number => {
-  if (typeof value === "number") return value;
-  if (typeof value === "string") {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
     const parsed = parseFloat(value);
     return Number.isFinite(parsed) ? parsed : 0;
   }
@@ -105,9 +103,9 @@ export const useServerGameStore = create<ServerGameStore>()(
             isLoading: false,
           });
         } catch (error: unknown) {
-          console.error("Server sync failed:", error);
+          console.error('Server sync failed:', error);
           set({
-            error: error instanceof Error ? error.message : "Sync failed",
+            error: error instanceof Error ? error.message : 'Sync failed',
             isLoading: false,
           });
         }
@@ -116,7 +114,7 @@ export const useServerGameStore = create<ServerGameStore>()(
       // Reconcile optimistic state with server state
       reconcileWithServer: (serverData: unknown) => {
         if (!isRecord(serverData)) {
-          set({ error: "Invalid server data" });
+          set({ error: 'Invalid server data' });
           return;
         }
 
@@ -148,14 +146,14 @@ export const useServerGameStore = create<ServerGameStore>()(
 
         try {
           // Optimistic update
-          set((state) => ({
+          set(state => ({
             optimisticGold: state.optimisticGold + 1,
-            lastAction: "collect",
+            lastAction: 'collect',
             pendingActions: [
               ...state.pendingActions,
               {
                 id: actionId,
-                type: "collect",
+                type: 'collect',
                 data: {},
                 timestamp: Date.now(),
               },
@@ -167,22 +165,18 @@ export const useServerGameStore = create<ServerGameStore>()(
 
           if (result.success) {
             // Remove pending action
-            set((state) => ({
-              pendingActions: state.pendingActions.filter(
-                (a) => a.id !== actionId,
-              ),
+            set(state => ({
+              pendingActions: state.pendingActions.filter(a => a.id !== actionId),
             }));
           } else {
-            throw new Error("Server rejected gold collection");
+            throw new Error('Server rejected gold collection');
           }
         } catch {
           // Revert optimistic update
-          set((state) => ({
+          set(state => ({
             optimisticGold: Math.max(0, state.optimisticGold - 1),
-            error: "Failed to collect gold",
-            pendingActions: state.pendingActions.filter(
-              (a) => a.id !== actionId,
-            ),
+            error: 'Failed to collect gold',
+            pendingActions: state.pendingActions.filter(a => a.id !== actionId),
           }));
         }
       },
@@ -193,7 +187,7 @@ export const useServerGameStore = create<ServerGameStore>()(
         const cost = 50 * Math.pow(1.2, state.optimisticGoblins); // Estimate cost
 
         if (state.optimisticGold < cost) {
-          set({ error: "Not enough gold to hire goblin" });
+          set({ error: 'Not enough gold to hire goblin' });
           return;
         }
 
@@ -201,16 +195,16 @@ export const useServerGameStore = create<ServerGameStore>()(
 
         try {
           // Optimistic update
-          set((prevState) => ({
+          set(prevState => ({
             optimisticGold: prevState.optimisticGold - cost,
             optimisticGoblins: prevState.optimisticGoblins + 1,
             goldPerSecond: 1 + (prevState.optimisticGoblins + 1) * 0.1,
-            lastAction: "hire",
+            lastAction: 'hire',
             pendingActions: [
               ...prevState.pendingActions,
               {
                 id: actionId,
-                type: "hire",
+                type: 'hire',
                 data: { cost },
                 timestamp: Date.now(),
               },
@@ -222,26 +216,20 @@ export const useServerGameStore = create<ServerGameStore>()(
 
           if (result.success) {
             // Remove pending action
-            set((state) => ({
-              pendingActions: state.pendingActions.filter(
-                (a) => a.id !== actionId,
-              ),
+            set(state => ({
+              pendingActions: state.pendingActions.filter(a => a.id !== actionId),
             }));
           } else {
-            throw new Error(result.error || "Server rejected hire request");
+            throw new Error(result.error || 'Server rejected hire request');
           }
         } catch (error) {
           // Revert optimistic update
-          set((prevState) => ({
+          set(prevState => ({
             optimisticGold: prevState.optimisticGold + cost,
             optimisticGoblins: Math.max(0, prevState.optimisticGoblins - 1),
-            goldPerSecond:
-              1 + Math.max(0, prevState.optimisticGoblins - 1) * 0.1,
-            error:
-              error instanceof Error ? error.message : "Failed to hire goblin",
-            pendingActions: prevState.pendingActions.filter(
-              (a) => a.id !== actionId,
-            ),
+            goldPerSecond: 1 + Math.max(0, prevState.optimisticGoblins - 1) * 0.1,
+            error: error instanceof Error ? error.message : 'Failed to hire goblin',
+            pendingActions: prevState.pendingActions.filter(a => a.id !== actionId),
           }));
         }
       },
@@ -251,7 +239,7 @@ export const useServerGameStore = create<ServerGameStore>()(
         const state = get();
 
         if (state.optimisticGoblins <= 0) {
-          set({ error: "No goblins to send" });
+          set({ error: 'No goblins to send' });
           return;
         }
 
@@ -260,14 +248,14 @@ export const useServerGameStore = create<ServerGameStore>()(
         try {
           // Optimistic update (estimate earnings)
           const estimatedEarnings = state.optimisticGoblins * 2;
-          set((prevState) => ({
+          set(prevState => ({
             optimisticGold: prevState.optimisticGold + estimatedEarnings,
-            lastAction: "send_minions",
+            lastAction: 'send_minions',
             pendingActions: [
               ...prevState.pendingActions,
               {
                 id: actionId,
-                type: "send",
+                type: 'send',
                 data: { earnings: estimatedEarnings },
                 timestamp: Date.now(),
               },
@@ -281,29 +269,20 @@ export const useServerGameStore = create<ServerGameStore>()(
             const actualEarnings = parseFloat(result.gold_earned);
 
             // Adjust for difference between estimate and actual
-            set((state) => ({
-              optimisticGold:
-                state.optimisticGold - estimatedEarnings + actualEarnings,
-              pendingActions: state.pendingActions.filter(
-                (a) => a.id !== actionId,
-              ),
+            set(state => ({
+              optimisticGold: state.optimisticGold - estimatedEarnings + actualEarnings,
+              pendingActions: state.pendingActions.filter(a => a.id !== actionId),
             }));
           } else {
-            throw new Error(result.error || "Server rejected send minions");
+            throw new Error(result.error || 'Server rejected send minions');
           }
         } catch (error) {
           // Revert optimistic update
           const estimatedEarnings = state.optimisticGoblins * 2;
-          set((prevState) => ({
-            optimisticGold: Math.max(
-              0,
-              prevState.optimisticGold - estimatedEarnings,
-            ),
-            error:
-              error instanceof Error ? error.message : "Failed to send minions",
-            pendingActions: prevState.pendingActions.filter(
-              (a) => a.id !== actionId,
-            ),
+          set(prevState => ({
+            optimisticGold: Math.max(0, prevState.optimisticGold - estimatedEarnings),
+            error: error instanceof Error ? error.message : 'Failed to send minions',
+            pendingActions: prevState.pendingActions.filter(a => a.id !== actionId),
           }));
         }
       },
@@ -313,13 +292,13 @@ export const useServerGameStore = create<ServerGameStore>()(
         const actionId = `explore_${Date.now()}`;
 
         try {
-          set((state) => ({
-            lastAction: "explore",
+          set(state => ({
+            lastAction: 'explore',
             pendingActions: [
               ...state.pendingActions,
               {
                 id: actionId,
-                type: "explore",
+                type: 'explore',
                 data: {},
                 timestamp: Date.now(),
               },
@@ -328,10 +307,8 @@ export const useServerGameStore = create<ServerGameStore>()(
 
           const result = await apiClient.exploreRuins();
 
-          set((state) => ({
-            pendingActions: state.pendingActions.filter(
-              (a) => a.id !== actionId,
-            ),
+          set(state => ({
+            pendingActions: state.pendingActions.filter(a => a.id !== actionId),
           }));
 
           if (result.treasure_found) {
@@ -339,11 +316,9 @@ export const useServerGameStore = create<ServerGameStore>()(
             await get().syncWithServer();
           }
         } catch {
-          set((state) => ({
-            error: "Failed to explore ruins",
-            pendingActions: state.pendingActions.filter(
-              (a) => a.id !== actionId,
-            ),
+          set(state => ({
+            error: 'Failed to explore ruins',
+            pendingActions: state.pendingActions.filter(a => a.id !== actionId),
           }));
         }
       },
@@ -354,7 +329,7 @@ export const useServerGameStore = create<ServerGameStore>()(
         const prestigeRequirement = 1000000;
 
         if (state.optimisticGold < prestigeRequirement) {
-          set({ error: "Not enough gold for prestige" });
+          set({ error: 'Not enough gold for prestige' });
           return;
         }
 
@@ -369,14 +344,14 @@ export const useServerGameStore = create<ServerGameStore>()(
               optimisticGold: 0,
               optimisticGoblins: 0,
               goldPerSecond: 1,
-              lastAction: "prestige",
+              lastAction: 'prestige',
             });
           } else {
-            throw new Error(result.error || "Prestige failed");
+            throw new Error(result.error || 'Prestige failed');
           }
         } catch (error) {
           set({
-            error: error instanceof Error ? error.message : "Prestige failed",
+            error: error instanceof Error ? error.message : 'Prestige failed',
           });
         }
       },
@@ -416,8 +391,8 @@ export const useServerGameStore = create<ServerGameStore>()(
       },
     }),
     {
-      name: "server-game-store",
-      partialize: (state) => ({
+      name: 'server-game-store',
+      partialize: state => ({
         serverGold: state.serverGold,
         serverGoblins: state.serverGoblins,
         serverAchievements: state.serverAchievements,
@@ -438,9 +413,7 @@ export const useServerGameStore = create<ServerGameStore>()(
           serverAchievements: toStringArray(persistedState.serverAchievements),
           serverTreasures: toStringArray(persistedState.serverTreasures),
           lastServerSync: toNumber(persistedState.lastServerSync),
-          goldPerSecond:
-            toNumber(persistedState.goldPerSecond) ||
-            currentState.goldPerSecond,
+          goldPerSecond: toNumber(persistedState.goldPerSecond) || currentState.goldPerSecond,
           // Reset optimistic state to server state on load
           optimisticGold: serverGold,
           optimisticGoblins: serverGoblins,
@@ -449,6 +422,6 @@ export const useServerGameStore = create<ServerGameStore>()(
           pendingActions: [],
         };
       },
-    },
-  ),
+    }
+  )
 );

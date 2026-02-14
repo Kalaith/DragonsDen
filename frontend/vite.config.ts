@@ -1,14 +1,14 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: "/dragons_den/",
+  base: '/dragons_den/',
   resolve: {
     alias: {
-      "@": "/src",
+      '@': '/src',
     },
   },
 });

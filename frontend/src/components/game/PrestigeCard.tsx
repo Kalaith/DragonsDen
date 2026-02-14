@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface PrestigeCardProps {
   canPrestige: boolean;
@@ -18,8 +18,7 @@ export const PrestigeCard: React.FC<PrestigeCardProps> = ({
       <div className="text-center text-white mb-3">
         <h3 className="text-lg font-bold">✨ Prestige Available! ✨</h3>
         <p className="text-sm opacity-90">
-          Reset your progress for permanent bonuses and prestige level{" "}
-          {nextLevel}
+          Reset your progress for permanent bonuses and prestige level {nextLevel}
         </p>
       </div>
       <button

@@ -1,12 +1,11 @@
-import React from "react";
-import { useGameStore } from "../../stores/gameStore";
-import { useAuthStore } from "../../stores/authStore";
+import React from 'react';
+import { useGameStore } from '../../stores/gameStore';
+import { useAuthStore } from '../../stores/authStore';
 
 const Header: React.FC = () => {
   const { prestigeLevel, achievements } = useGameStore();
   const { user } = useAuthStore();
-  const userLabel =
-    user?.username || user?.email || (user?.id ? `User #${user.id}` : null);
+  const userLabel = user?.username || user?.email || (user?.id ? `User #${user.id}` : null);
 
   return (
     <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gradient-to-r from-red-900 to-orange-800 text-white shadow-lg">
@@ -23,16 +22,12 @@ const Header: React.FC = () => {
       <nav className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto justify-between sm:justify-end">
         <div className="flex items-center gap-2">
           <span>🏆</span>
-          <span className="text-xs sm:text-sm">
-            {achievements.size} Achievements
-          </span>
+          <span className="text-xs sm:text-sm">{achievements.size} Achievements</span>
         </div>
 
         <div className="flex items-center gap-3 text-xs sm:text-sm">
           {userLabel ? (
-            <span className="px-2 py-1 rounded bg-white/10">
-              Logged in: {userLabel}
-            </span>
+            <span className="px-2 py-1 rounded bg-white/10">Logged in: {userLabel}</span>
           ) : (
             <span className="px-2 py-1 rounded bg-white/10">Not logged in</span>
           )}

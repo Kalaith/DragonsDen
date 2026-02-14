@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface UIState {
   isModalOpen: boolean;
@@ -6,8 +6,8 @@ interface UIState {
   setModalOpen: (isOpen: boolean) => void;
 }
 
-export const useUIStore = create<UIState>((set) => ({
+export const useUIStore = create<UIState>(set => ({
   isModalOpen: false,
-  toggleModal: () => set((state) => ({ isModalOpen: !state.isModalOpen })),
-  setModalOpen: (isOpen) => set({ isModalOpen: isOpen }),
+  toggleModal: () => set(state => ({ isModalOpen: !state.isModalOpen })),
+  setModalOpen: isOpen => set({ isModalOpen: isOpen }),
 }));

@@ -5,8 +5,8 @@ import {
   AncientRuin,
   WorldEvent,
   RuinFloor,
-} from "../types/world";
-import { ElementType } from "../types/dragons";
+} from '../types/world';
+import { ElementType } from '../types/dragons';
 
 export interface WorldGenerationConfig {
   worldSize: { width: number; height: number };
@@ -44,12 +44,7 @@ export class WorldGenerator {
       // Every 5 units to avoid overcrowding
       for (let y = 0; y < height; y += 5) {
         if (this.rng.random() < this.config.locationDensity) {
-          const location = this.generateLocation(
-            x,
-            y,
-            biomeMap[x][y],
-            heightMap[x][y],
-          );
+          const location = this.generateLocation(x, y, biomeMap[x][y], heightMap[x][y]);
           locations.push(location);
         }
       }
@@ -89,11 +84,7 @@ export class WorldGenerator {
     return heightMap;
   }
 
-  private generateBiomes(
-    heightMap: number[][],
-    width: number,
-    height: number,
-  ): BiomeType[][] {
+  private generateBiomes(heightMap: number[][], width: number, height: number): BiomeType[][] {
     const biomeMap: BiomeType[][] = [];
     const centerX = width / 2;
     const centerY = height / 2;
@@ -101,11 +92,8 @@ export class WorldGenerator {
     for (let x = 0; x < width; x++) {
       biomeMap[x] = [];
       for (let y = 0; y < height; y++) {
-        const distanceFromCenter = Math.sqrt(
-          (x - centerX) ** 2 + (y - centerY) ** 2,
-        );
-        const normalizedDistance =
-          distanceFromCenter / Math.sqrt(centerX ** 2 + centerY ** 2);
+        const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        const normalizedDistance = distanceFromCenter / Math.sqrt(centerX ** 2 + centerY ** 2);
         const height = heightMap[x][y];
 
         biomeMap[x][y] = this.determineBiome(height, normalizedDistance, x, y);
@@ -119,49 +107,44 @@ export class WorldGenerator {
     height: number,
     distanceFromCenter: number,
     x: number,
-    y: number,
+    y: number
   ): BiomeType {
     // Use position-based noise for biome variation
     const biomeNoise = this.noise(x * 0.005, y * 0.005);
 
     // High altitude areas
     if (height > 0.8) {
-      return distanceFromCenter > 0.7 ? "mountain" : "sky_realm";
+      return distanceFromCenter > 0.7 ? 'mountain' : 'sky_realm';
     }
 
     // Water areas
     if (height < 0.3) {
-      return "ocean";
+      return 'ocean';
     }
 
     // Extreme distance from center suggests hostile environments
     if (distanceFromCenter > 0.8) {
-      if (biomeNoise > 0.3) return "shadow_realm";
-      if (biomeNoise > 0.0) return "volcanic";
-      return "desert";
+      if (biomeNoise > 0.3) return 'shadow_realm';
+      if (biomeNoise > 0.0) return 'volcanic';
+      return 'desert';
     }
 
     // Mid-range areas based on height and noise
     if (height > 0.6) {
-      return biomeNoise > 0.2 ? "mountain" : "frozen";
+      return biomeNoise > 0.2 ? 'mountain' : 'frozen';
     }
 
     if (height > 0.4) {
-      if (biomeNoise > 0.4) return "forest";
-      if (biomeNoise > 0.0) return "desert";
-      return "swamp";
+      if (biomeNoise > 0.4) return 'forest';
+      if (biomeNoise > 0.0) return 'desert';
+      return 'swamp';
     }
 
     // Default temperate areas
-    return biomeNoise > 0.0 ? "forest" : "swamp";
+    return biomeNoise > 0.0 ? 'forest' : 'swamp';
   }
 
-  private generateLocation(
-    x: number,
-    y: number,
-    biome: BiomeType,
-    height: number,
-  ): WorldLocation {
+  private generateLocation(x: number, y: number, biome: BiomeType, height: number): WorldLocation {
     const centerDistance = Math.sqrt(x ** 2 + y ** 2);
     const difficulty = this.calculateDifficulty(centerDistance);
     const name = this.generateLocationName(biome, difficulty);
@@ -185,40 +168,36 @@ export class WorldGenerator {
   }
 
   private calculateDifficulty(distanceFromCenter: number): LocationDifficulty {
-    const { easyRadius, normalRadius, hardRadius } =
-      this.config.difficultyProgression;
+    const { easyRadius, normalRadius, hardRadius } = this.config.difficultyProgression;
 
-    if (distanceFromCenter < easyRadius) return "peaceful";
-    if (distanceFromCenter < easyRadius * 1.5) return "easy";
-    if (distanceFromCenter < normalRadius) return "normal";
-    if (distanceFromCenter < hardRadius) return "hard";
-    if (distanceFromCenter < hardRadius * 1.5) return "extreme";
-    return "legendary";
+    if (distanceFromCenter < easyRadius) return 'peaceful';
+    if (distanceFromCenter < easyRadius * 1.5) return 'easy';
+    if (distanceFromCenter < normalRadius) return 'normal';
+    if (distanceFromCenter < hardRadius) return 'hard';
+    if (distanceFromCenter < hardRadius * 1.5) return 'extreme';
+    return 'legendary';
   }
 
-  private generateLocationName(
-    biome: BiomeType,
-    difficulty: LocationDifficulty,
-  ): string {
+  private generateLocationName(biome: BiomeType, difficulty: LocationDifficulty): string {
     const biomeNames = {
-      volcanic: ["Ember", "Flame", "Magma", "Inferno", "Cinder"],
-      frozen: ["Frost", "Ice", "Blizzard", "Crystal", "Winter"],
-      forest: ["Green", "Wild", "Ancient", "Mystic", "Elder"],
-      desert: ["Sand", "Dune", "Mirage", "Oasis", "Scorching"],
-      swamp: ["Murky", "Bog", "Mist", "Thorn", "Decay"],
-      mountain: ["Peak", "Summit", "Ridge", "Crag", "Stone"],
-      ocean: ["Deep", "Wave", "Tide", "Coral", "Abyss"],
-      sky_realm: ["Cloud", "Wind", "Storm", "Celestial", "Ethereal"],
-      shadow_realm: ["Shadow", "Void", "Dark", "Nightmare", "Cursed"],
+      volcanic: ['Ember', 'Flame', 'Magma', 'Inferno', 'Cinder'],
+      frozen: ['Frost', 'Ice', 'Blizzard', 'Crystal', 'Winter'],
+      forest: ['Green', 'Wild', 'Ancient', 'Mystic', 'Elder'],
+      desert: ['Sand', 'Dune', 'Mirage', 'Oasis', 'Scorching'],
+      swamp: ['Murky', 'Bog', 'Mist', 'Thorn', 'Decay'],
+      mountain: ['Peak', 'Summit', 'Ridge', 'Crag', 'Stone'],
+      ocean: ['Deep', 'Wave', 'Tide', 'Coral', 'Abyss'],
+      sky_realm: ['Cloud', 'Wind', 'Storm', 'Celestial', 'Ethereal'],
+      shadow_realm: ['Shadow', 'Void', 'Dark', 'Nightmare', 'Cursed'],
     };
 
     const suffixes = {
-      peaceful: ["Haven", "Sanctuary", "Garden", "Vale", "Rest"],
-      easy: ["Grove", "Meadow", "Hill", "Brook", "Glade"],
-      normal: ["Land", "Territory", "Region", "Domain", "Expanse"],
-      hard: ["Wastes", "Reaches", "Depths", "Heights", "Bounds"],
-      extreme: ["Abyss", "Maelstrom", "Vortex", "Chasm", "Tempest"],
-      legendary: ["Apocalypse", "Cataclysm", "Terminus", "Nexus", "Oblivion"],
+      peaceful: ['Haven', 'Sanctuary', 'Garden', 'Vale', 'Rest'],
+      easy: ['Grove', 'Meadow', 'Hill', 'Brook', 'Glade'],
+      normal: ['Land', 'Territory', 'Region', 'Domain', 'Expanse'],
+      hard: ['Wastes', 'Reaches', 'Depths', 'Heights', 'Bounds'],
+      extreme: ['Abyss', 'Maelstrom', 'Vortex', 'Chasm', 'Tempest'],
+      legendary: ['Apocalypse', 'Cataclysm', 'Terminus', 'Nexus', 'Oblivion'],
     };
 
     const biomeName = this.rng.choice(biomeNames[biome]);
@@ -227,10 +206,7 @@ export class WorldGenerator {
     return `${biomeName} ${suffix}`;
   }
 
-  private calculateRequiredLevel(
-    difficulty: LocationDifficulty,
-    distance: number,
-  ): number {
+  private calculateRequiredLevel(difficulty: LocationDifficulty, distance: number): number {
     const baseLevels = {
       peaceful: 1,
       easy: 3,
@@ -247,59 +223,55 @@ export class WorldGenerator {
   private generateResources(
     biome: BiomeType,
     difficulty: LocationDifficulty,
-    height: number,
-  ): WorldLocation["resources"] {
+    height: number
+  ): WorldLocation['resources'] {
     void difficulty;
     void height;
     const biomeResources = {
       volcanic: {
-        commonTreasures: ["obsidian_shard", "sulfur_crystal", "lava_stone"],
-        rareTreasures: ["fire_essence", "molten_core", "phoenix_feather"],
-        uniqueResources: ["dragon_heart_ruby", "eternal_flame"],
+        commonTreasures: ['obsidian_shard', 'sulfur_crystal', 'lava_stone'],
+        rareTreasures: ['fire_essence', 'molten_core', 'phoenix_feather'],
+        uniqueResources: ['dragon_heart_ruby', 'eternal_flame'],
       },
       frozen: {
-        commonTreasures: ["ice_crystal", "frost_berry", "winter_herb"],
-        rareTreasures: ["frozen_tear", "ice_essence", "aurora_fragment"],
-        uniqueResources: ["heart_of_winter", "glacier_core"],
+        commonTreasures: ['ice_crystal', 'frost_berry', 'winter_herb'],
+        rareTreasures: ['frozen_tear', 'ice_essence', 'aurora_fragment'],
+        uniqueResources: ['heart_of_winter', 'glacier_core'],
       },
       forest: {
-        commonTreasures: ["elderwood", "moonflower", "spirit_moss"],
-        rareTreasures: ["treant_bark", "fairy_dust", "nature_essence"],
-        uniqueResources: ["world_tree_seed", "druid_stone"],
+        commonTreasures: ['elderwood', 'moonflower', 'spirit_moss'],
+        rareTreasures: ['treant_bark', 'fairy_dust', 'nature_essence'],
+        uniqueResources: ['world_tree_seed', 'druid_stone'],
       },
       desert: {
-        commonTreasures: ["sand_glass", "cactus_spine", "sun_stone"],
-        rareTreasures: ["mirage_essence", "desert_rose", "scorpion_venom"],
-        uniqueResources: ["pharaoh_treasure", "oasis_heart"],
+        commonTreasures: ['sand_glass', 'cactus_spine', 'sun_stone'],
+        rareTreasures: ['mirage_essence', 'desert_rose', 'scorpion_venom'],
+        uniqueResources: ['pharaoh_treasure', 'oasis_heart'],
       },
       swamp: {
-        commonTreasures: ["bog_root", "marsh_gas", "toxic_moss"],
-        rareTreasures: ["will_o_wisp", "swamp_essence", "crocodile_scale"],
-        uniqueResources: ["ancient_bog_treasure", "plague_source"],
+        commonTreasures: ['bog_root', 'marsh_gas', 'toxic_moss'],
+        rareTreasures: ['will_o_wisp', 'swamp_essence', 'crocodile_scale'],
+        uniqueResources: ['ancient_bog_treasure', 'plague_source'],
       },
       mountain: {
-        commonTreasures: ["mountain_ore", "eagle_feather", "stone_moss"],
-        rareTreasures: ["mythril_vein", "wind_essence", "giant_tooth"],
-        uniqueResources: ["mountain_king_crown", "skyforge_metal"],
+        commonTreasures: ['mountain_ore', 'eagle_feather', 'stone_moss'],
+        rareTreasures: ['mythril_vein', 'wind_essence', 'giant_tooth'],
+        uniqueResources: ['mountain_king_crown', 'skyforge_metal'],
       },
       ocean: {
-        commonTreasures: ["coral_fragment", "sea_salt", "kelp_strand"],
-        rareTreasures: ["pearl", "water_essence", "kraken_ink"],
-        uniqueResources: ["poseidon_trident", "leviathan_scale"],
+        commonTreasures: ['coral_fragment', 'sea_salt', 'kelp_strand'],
+        rareTreasures: ['pearl', 'water_essence', 'kraken_ink'],
+        uniqueResources: ['poseidon_trident', 'leviathan_scale'],
       },
       sky_realm: {
-        commonTreasures: ["cloud_essence", "wind_feather", "star_fragment"],
-        rareTreasures: ["storm_core", "lightning_bottle", "celestial_silk"],
-        uniqueResources: ["sky_god_blessing", "rainbow_bridge_shard"],
+        commonTreasures: ['cloud_essence', 'wind_feather', 'star_fragment'],
+        rareTreasures: ['storm_core', 'lightning_bottle', 'celestial_silk'],
+        uniqueResources: ['sky_god_blessing', 'rainbow_bridge_shard'],
       },
       shadow_realm: {
-        commonTreasures: ["shadow_wisp", "dark_crystal", "void_essence"],
-        rareTreasures: [
-          "nightmare_fuel",
-          "soul_fragment",
-          "darkness_incarnate",
-        ],
-        uniqueResources: ["abyss_heart", "oblivion_shard"],
+        commonTreasures: ['shadow_wisp', 'dark_crystal', 'void_essence'],
+        rareTreasures: ['nightmare_fuel', 'soul_fragment', 'darkness_incarnate'],
+        uniqueResources: ['abyss_heart', 'oblivion_shard'],
       },
     };
 
@@ -308,8 +280,8 @@ export class WorldGenerator {
 
   private generateEncounters(
     biome: BiomeType,
-    difficulty: LocationDifficulty,
-  ): WorldLocation["encounters"] {
+    difficulty: LocationDifficulty
+  ): WorldLocation['encounters'] {
     // Generate wild dragons, ruins, and events based on biome and difficulty
     const encounters = {
       wildDragons: this.generateWildDragons(biome, difficulty),
@@ -320,45 +292,32 @@ export class WorldGenerator {
     return encounters;
   }
 
-  private generateWildDragons(
-    biome: BiomeType,
-    difficulty: LocationDifficulty,
-  ): string[] {
+  private generateWildDragons(biome: BiomeType, difficulty: LocationDifficulty): string[] {
     const biomeElements: Record<BiomeType, ElementType[]> = {
-      volcanic: ["fire"],
-      frozen: ["ice"],
-      forest: ["earth", "air"],
-      desert: ["fire", "earth"],
-      swamp: ["poison", "earth"],
-      mountain: ["earth", "air"],
-      ocean: ["ice", "air"],
-      sky_realm: ["air", "lightning"],
-      shadow_realm: ["shadow", "poison"],
+      volcanic: ['fire'],
+      frozen: ['ice'],
+      forest: ['earth', 'air'],
+      desert: ['fire', 'earth'],
+      swamp: ['poison', 'earth'],
+      mountain: ['earth', 'air'],
+      ocean: ['ice', 'air'],
+      sky_realm: ['air', 'lightning'],
+      shadow_realm: ['shadow', 'poison'],
     };
 
-    const elements = biomeElements[biome] || ["fire"];
+    const elements = biomeElements[biome] || ['fire'];
     const dragonCount = this.getDragonCountByDifficulty(difficulty);
 
     return Array.from(
       { length: dragonCount },
-      (_, i) => `${this.rng.choice(elements)}_dragon_${difficulty}_${i}`,
+      (_, i) => `${this.rng.choice(elements)}_dragon_${difficulty}_${i}`
     );
   }
 
-  private generateRuins(
-    biome: BiomeType,
-    difficulty: LocationDifficulty,
-  ): AncientRuin[] {
+  private generateRuins(biome: BiomeType, difficulty: LocationDifficulty): AncientRuin[] {
     if (this.rng.random() > this.config.ruinProbability) return [];
 
-    const ruinTypes = [
-      "temple",
-      "tower",
-      "tomb",
-      "library",
-      "fortress",
-      "sanctuary",
-    ] as const;
+    const ruinTypes = ['temple', 'tower', 'tomb', 'library', 'fortress', 'sanctuary'] as const;
     const ruinType = this.rng.choice(ruinTypes);
 
     const ruin: AncientRuin = {
@@ -374,63 +333,58 @@ export class WorldGenerator {
     return [ruin];
   }
 
-  private generateEvents(
-    biome: BiomeType,
-    difficulty: LocationDifficulty,
-  ): WorldEvent[] {
+  private generateEvents(biome: BiomeType, difficulty: LocationDifficulty): WorldEvent[] {
     void biome;
     void difficulty;
     // Generate random events based on biome characteristics
     return [];
   }
 
-  private generateEnvironmentalEffects(
-    biome: BiomeType,
-  ): WorldLocation["environmentEffects"] {
+  private generateEnvironmentalEffects(biome: BiomeType): WorldLocation['environmentEffects'] {
     const biomeEffects = {
       volcanic: {
-        favoredElements: ["fire"],
-        resistantElements: ["ice", "air"],
+        favoredElements: ['fire'],
+        resistantElements: ['ice', 'air'],
         dangerLevel: 7,
       },
       frozen: {
-        favoredElements: ["ice"],
-        resistantElements: ["fire"],
+        favoredElements: ['ice'],
+        resistantElements: ['fire'],
         dangerLevel: 5,
       },
       forest: {
-        favoredElements: ["earth", "air"],
-        resistantElements: ["fire"],
+        favoredElements: ['earth', 'air'],
+        resistantElements: ['fire'],
         dangerLevel: 3,
       },
       desert: {
-        favoredElements: ["fire"],
-        resistantElements: ["ice", "air"],
+        favoredElements: ['fire'],
+        resistantElements: ['ice', 'air'],
         dangerLevel: 6,
       },
       swamp: {
-        favoredElements: ["poison", "earth"],
-        resistantElements: ["light", "fire"],
+        favoredElements: ['poison', 'earth'],
+        resistantElements: ['light', 'fire'],
         dangerLevel: 8,
       },
       mountain: {
-        favoredElements: ["earth", "air"],
-        resistantElements: ["poison"],
+        favoredElements: ['earth', 'air'],
+        resistantElements: ['poison'],
         dangerLevel: 4,
       },
       ocean: {
-        favoredElements: ["ice", "air"],
-        resistantElements: ["fire", "earth"],
+        favoredElements: ['ice', 'air'],
+        resistantElements: ['fire', 'earth'],
         dangerLevel: 6,
       },
       sky_realm: {
-        favoredElements: ["air", "lightning"],
-        resistantElements: ["earth"],
+        favoredElements: ['air', 'lightning'],
+        resistantElements: ['earth'],
         dangerLevel: 9,
       },
       shadow_realm: {
-        favoredElements: ["shadow"],
-        resistantElements: ["light"],
+        favoredElements: ['shadow'],
+        resistantElements: ['light'],
         dangerLevel: 10,
       },
     };
@@ -459,24 +413,21 @@ export class WorldGenerator {
 
   private generateRuinName(type: string, biome: BiomeType): string {
     const adjectives = {
-      volcanic: "Molten",
-      frozen: "Frozen",
-      forest: "Ancient",
-      desert: "Buried",
-      swamp: "Sunken",
-      mountain: "Sky-high",
-      ocean: "Sunken",
-      sky_realm: "Floating",
-      shadow_realm: "Cursed",
+      volcanic: 'Molten',
+      frozen: 'Frozen',
+      forest: 'Ancient',
+      desert: 'Buried',
+      swamp: 'Sunken',
+      mountain: 'Sky-high',
+      ocean: 'Sunken',
+      sky_realm: 'Floating',
+      shadow_realm: 'Cursed',
     };
 
-    return `${adjectives[biome] || "Ancient"} ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+    return `${adjectives[biome] || 'Ancient'} ${type.charAt(0).toUpperCase() + type.slice(1)}`;
   }
 
-  private generateRuinFloors(
-    type: string,
-    difficulty: LocationDifficulty,
-  ): RuinFloor[] {
+  private generateRuinFloors(type: string, difficulty: LocationDifficulty): RuinFloor[] {
     void type;
     const floorCount = {
       peaceful: 1,
@@ -489,26 +440,18 @@ export class WorldGenerator {
 
     return Array.from({ length: floorCount }, (_, i) => ({
       level: i + 1,
-      layout: this.rng.choice([
-        "linear",
-        "branching",
-        "circular",
-        "maze",
-      ] as const),
+      layout: this.rng.choice(['linear', 'branching', 'circular', 'maze'] as const),
       challenges: [],
       treasures: [],
-      guardian:
-        i === floorCount - 1
-          ? { type: "boss", difficulty: 8, rewards: [] }
-          : undefined,
+      guardian: i === floorCount - 1 ? { type: 'boss', difficulty: 8, rewards: [] } : undefined,
     }));
   }
 
   private generateLegendaryReward(
     biome: BiomeType,
-    difficulty: LocationDifficulty,
+    difficulty: LocationDifficulty
   ): string | undefined {
-    if (difficulty === "legendary") {
+    if (difficulty === 'legendary') {
       return `${biome}_legendary_artifact`;
     }
     return undefined;
@@ -517,7 +460,7 @@ export class WorldGenerator {
   private ensureStartingArea(locations: WorldLocation[]): void {
     // Ensure there are appropriate starting locations near center
     const startingLocations = locations.filter(
-      (loc) => Math.sqrt(loc.coordinates.x ** 2 + loc.coordinates.y ** 2) < 100,
+      loc => Math.sqrt(loc.coordinates.x ** 2 + loc.coordinates.y ** 2) < 100
     );
 
     if (startingLocations.length < 3) {
@@ -530,15 +473,15 @@ export class WorldGenerator {
         const starterLocation: WorldLocation = {
           id: `starter_${i}`,
           name: `Peaceful Valley ${i + 1}`,
-          biome: "forest",
-          difficulty: "peaceful",
+          biome: 'forest',
+          difficulty: 'peaceful',
           discovered: true,
           explorationProgress: 100,
           coordinates: { x, y },
           requiredLevel: 1,
           resources: {
-            commonTreasures: ["basic_gem", "small_gold"],
-            rareTreasures: ["training_manual"],
+            commonTreasures: ['basic_gem', 'small_gold'],
+            rareTreasures: ['training_manual'],
             uniqueResources: [],
           },
           encounters: {
@@ -547,7 +490,7 @@ export class WorldGenerator {
             events: [],
           },
           environmentEffects: {
-            favoredElements: ["earth", "air"],
+            favoredElements: ['earth', 'air'],
             resistantElements: [],
             dangerLevel: 1,
           },

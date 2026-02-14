@@ -1,6 +1,6 @@
-import React from "react";
-import { UpgradeItem } from "./UpgradeItem";
-import { useUpgrades } from "../../hooks/useUpgrades";
+import React from 'react';
+import { UpgradeItem } from './UpgradeItem';
+import { useUpgrades } from '../../hooks/useUpgrades';
 
 export const UpgradeShop: React.FC = () => {
   const { upgradeData, handlePurchase, formatNumber } = useUpgrades();
@@ -10,7 +10,7 @@ export const UpgradeShop: React.FC = () => {
       <h2 className="text-xl font-bold mb-4 text-gray-800">🛒 Upgrade Shop</h2>
 
       <div className="space-y-3">
-        {upgradeData.map((upgrade) => (
+        {upgradeData.map(upgrade => (
           <UpgradeItem
             key={upgrade.id}
             id={upgrade.id}
