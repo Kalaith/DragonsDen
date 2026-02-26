@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiClient } from '../../api';
+import { apiClient } from '../../api/ApiClient';
 import { apiConfig } from '../../config/api';
 
 interface ApiStatusProps {
