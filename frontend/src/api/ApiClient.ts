@@ -1,155 +1,63 @@
-import { apiConfig } from '../config/api';
+import axios from 'axios';
 import { useAuthStore } from '../stores/authStore';
 
-interface PlayerDataResponse {
-  gold: number | string;
-  goblins: number | string;
-  achievements?: unknown;
-  treasures?: unknown;
-  [key: string]: unknown;
-}
+// Determine the base URL from the environment or use a relative path
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
-interface ActionResponse {
-  success: boolean;
-  error?: string;
-  [key: string]: unknown;
-}
+/**
+ * Standardized Web Hatchery Axios Instance
+ * Automatically handles Bearer tokens and 401 Unauthorized redirects.
+ */
+export const apiClient = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
 
-interface SendMinionsResponse extends ActionResponse {
-  gold_earned: number | string;
-}
-
-interface ExploreRuinsResponse {
-  treasure_found?: boolean;
-  success?: boolean;
-  error?: string;
-  [key: string]: unknown;
-}
-
-export default class ApiClient {
-  private baseUrl: string;
-
-  constructor(baseUrl?: string) {
-    this.baseUrl = baseUrl || apiConfig.BACKEND_BASE_URL;
-  }
-
-  private async fetchJson<T = unknown>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
-
-    if (apiConfig.LOG_REQUESTS) {
-      console.log(`API Request: ${options.method || 'GET'} ${url}`);
-    }
-
-    const authToken = useAuthStore.getState().token;
-    const authHeader: Record<string, string> = authToken
-      ? { Authorization: `Bearer ${authToken}` }
-      : {};
-    const extraHeaders =
-      options.headers && !Array.isArray(options.headers)
-        ? (options.headers as Record<string, string>)
-        : {};
-
-    // Add timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), apiConfig.DEFAULT_TIMEOUT);
-
-    try {
-      const response = await fetch(url, {
-        ...options,
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          ...authHeader,
-          ...extraHeaders,
-        },
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          try {
-            await response.json();
-          } catch {
-            // ignore JSON parse errors for 401
-          }
-          throw new Error('Not logged in');
+// Request Interceptor: Attach Auth Token
+apiClient.interceptors.request.use(
+    (config) => {
+        // We intentionally interact directly with localStorage here to avoid
+        // reactivity issues or circular dependencies when initializing Axios outside of React.
+        try {
+            const authStorageStr = localStorage.getItem('auth-storage');
+            if (authStorageStr) {
+                const authData = JSON.parse(authStorageStr);
+                // Zustand persist wraps state in a `state` object
+                const token = authData?.state?.token;
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to parse auth token from local storage', error);
         }
-        throw new Error(
-          `API request failed with status ${response.status}: ${response.statusText}`
-        );
-      }
 
-      const data: unknown = await response.json();
-      return data as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof Error && error.name === 'AbortError') {
-        throw new Error(`API request timed out after ${apiConfig.DEFAULT_TIMEOUT}ms`);
-      }
-      throw error;
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
-  }
+);
 
-  public async getConstants(): Promise<unknown> {
-    return this.fetchJson(apiConfig.ENDPOINTS.CONSTANTS);
-  }
+// Response Interceptor: Handle 401s and standardize errors
+apiClient.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        // Intercept 401 Unauthorized and redirect to central login
+        if (error.response?.status === 401) {
+            const loginUrl =
+                error.response?.data?.login_url ||
+                import.meta.env.VITE_WEB_HATCHERY_LOGIN_URL;
 
-  public async getAchievements(): Promise<unknown> {
-    return this.fetchJson(apiConfig.ENDPOINTS.ACHIEVEMENTS);
-  }
-
-  public async getTreasures(): Promise<unknown> {
-    return this.fetchJson(apiConfig.ENDPOINTS.TREASURES);
-  }
-
-  public async getUpgrades(): Promise<unknown> {
-    return this.fetchJson(apiConfig.ENDPOINTS.UPGRADES);
-  }
-
-  public async getUpgradeDefinitions(): Promise<unknown> {
-    return this.fetchJson(apiConfig.ENDPOINTS.UPGRADE_DEFINITIONS);
-  }
-
-  public async getPlayerData(): Promise<PlayerDataResponse> {
-    return this.fetchJson<PlayerDataResponse>(apiConfig.ENDPOINTS.PLAYER);
-  }
-
-  public async collectGold(): Promise<ActionResponse> {
-    return this.fetchJson<ActionResponse>(apiConfig.ENDPOINTS.PLAYER_COLLECT_GOLD, {
-      method: 'POST',
-    });
-  }
-
-  public async sendMinions(): Promise<SendMinionsResponse> {
-    return this.fetchJson<SendMinionsResponse>(apiConfig.ENDPOINTS.PLAYER_SEND_MINIONS, {
-      method: 'POST',
-    });
-  }
-
-  public async exploreRuins(): Promise<ExploreRuinsResponse> {
-    return this.fetchJson<ExploreRuinsResponse>(apiConfig.ENDPOINTS.PLAYER_EXPLORE_RUINS, {
-      method: 'POST',
-    });
-  }
-
-  public async hireGoblin(): Promise<ActionResponse> {
-    return this.fetchJson<ActionResponse>(apiConfig.ENDPOINTS.PLAYER_HIRE_GOBLIN, {
-      method: 'POST',
-    });
-  }
-
-  public async prestigePlayer(): Promise<ActionResponse> {
-    return this.fetchJson<ActionResponse>(apiConfig.ENDPOINTS.PLAYER_PRESTIGE, {
-      method: 'POST',
-    });
-  }
-
-  public async getSystemStatus(): Promise<unknown> {
-    return this.fetchJson(apiConfig.ENDPOINTS.SYSTEM_STATUS);
-  }
-
-  public async getAuthSession(): Promise<unknown> {
-    return this.fetchJson('/api/auth/session');
-  }
-}
+            if (loginUrl) {
+                // Update the Zustand store to trigger the login UI state
+                useAuthStore.getState().setLoginUrl(loginUrl);
+            }
+        }
+        return Promise.reject(error);
+    }
+);
