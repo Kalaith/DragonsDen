@@ -4,8 +4,17 @@ import { useAuthStore } from '../../stores/authStore';
 
 const Header: React.FC = () => {
   const { prestigeLevel, achievements } = useGameStore();
-  const { user } = useAuthStore();
+  const { user, authMode, loginUrl } = useAuthStore();
   const userLabel = user?.username || user?.email || (user?.id ? `User #${user.id}` : null);
+  const linkAccountUrl = (() => {
+    const baseLoginUrl = loginUrl || import.meta.env.VITE_WEB_HATCHERY_LOGIN_URL || '/login';
+    const url = new URL(baseLoginUrl, window.location.origin);
+    url.searchParams.set('return_to', window.location.href);
+    if (user?.is_guest && user.id) {
+      url.searchParams.set('guest_user_id', user.id);
+    }
+    return url.toString();
+  })();
 
   return (
     <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gradient-to-r from-red-900 to-orange-800 text-white shadow-lg">
@@ -27,10 +36,17 @@ const Header: React.FC = () => {
 
         <div className="flex items-center gap-3 text-xs sm:text-sm">
           {userLabel ? (
-            <span className="px-2 py-1 rounded bg-white/10">Logged in: {userLabel}</span>
+            <span className="px-2 py-1 rounded bg-white/10">
+              {authMode === 'guest' ? 'Guest' : 'Logged in'}: {userLabel}
+            </span>
           ) : (
             <span className="px-2 py-1 rounded bg-white/10">Not logged in</span>
           )}
+          {user?.is_guest ? (
+            <a href={linkAccountUrl} className="px-2 py-1 rounded bg-yellow-300 text-red-950 font-semibold">
+              Link Account
+            </a>
+          ) : null}
         </div>
 
         <div className="flex gap-2 sm:gap-4">

@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { apiConfig } from '../config/api';
+import { getActiveToken, WEBHATCHERY_AUTH_STORAGE_KEY } from '../stores/authStore';
 
 export interface PlayerActionResponse {
   success: boolean;
@@ -23,15 +24,9 @@ class GameApiClient {
     this.http.interceptors.request.use(
       config => {
         try {
-          const authStorageStr = localStorage.getItem('auth-storage');
-          if (authStorageStr) {
-            const authData = JSON.parse(authStorageStr) as {
-              state?: { token?: string };
-            };
-            const token = authData?.state?.token;
-            if (token) {
-              config.headers.Authorization = `Bearer ${token}`;
-            }
+          const token = getActiveToken();
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
           }
         } catch (error) {
           console.warn('Failed to parse auth token from local storage', error);
@@ -50,7 +45,7 @@ class GameApiClient {
 
           if (loginUrl) {
             try {
-              const raw = localStorage.getItem('auth-storage');
+              const raw = localStorage.getItem(WEBHATCHERY_AUTH_STORAGE_KEY);
               const parsed = raw ? JSON.parse(raw) : {};
               const state = parsed?.state ?? {};
               const next = {
@@ -60,7 +55,7 @@ class GameApiClient {
                   loginUrl,
                 },
               };
-              localStorage.setItem('auth-storage', JSON.stringify(next));
+              localStorage.setItem(WEBHATCHERY_AUTH_STORAGE_KEY, JSON.stringify(next));
               window.dispatchEvent(
                 new CustomEvent('webhatchery:login-required', { detail: { loginUrl } })
               );

@@ -24,6 +24,8 @@ return function (Router $router): void {
 
     // Auth
     $router->get($api . '/auth/session', [AuthController::class, 'session'], [WebHatcheryJwtMiddleware::class]);
+    $router->post($api . '/auth/guest-session', [AuthController::class, 'guestSession']);
+    $router->post($api . '/auth/link-guest', [AuthController::class, 'linkGuest'], [WebHatcheryJwtMiddleware::class]);
 
     // Player Actions (protected)
     $router->get($api . '/player', [PlayerController::class, 'getPlayerData'], [WebHatcheryJwtMiddleware::class]);
