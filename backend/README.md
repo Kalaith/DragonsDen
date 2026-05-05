@@ -45,7 +45,13 @@ A PHP backend for the "Dragons Den" incremental/idle game.
    php scripts/init-database.php
    ```
 
-4. **Start Server**
+4. **Apply Existing-Install Migrations**
+   ```bash
+   mysql dragons_den < database/001_auth_owned_player_state.sql
+   ```
+   New installs created from `initData/init.sql` already use auth-owned player state. Existing local or deployed installs must apply the ordered migration above before guest saves can load.
+
+5. **Start Server**
    ```bash
    composer start
    # Server runs on http://localhost:3010

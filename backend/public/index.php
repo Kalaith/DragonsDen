@@ -1,7 +1,7 @@
 <?php
 
 // Local autoloader for deployed API src (avoid central autoload mapping collisions)
-spl_autoload_register(function (string $class): void {
+$appAutoloader = function (string $class): void {
     $prefix = 'App\\';
     $baseDir = __DIR__ . '/../src/';
     if (strncmp($class, $prefix, strlen($prefix)) !== 0) {
@@ -12,7 +12,8 @@ spl_autoload_register(function (string $class): void {
     if (file_exists($file)) {
         require $file;
     }
-});
+};
+spl_autoload_register($appAutoloader);
 
 $autoloader = null;
 $searchPaths = [
@@ -35,7 +36,9 @@ if (!$autoloader) {
 }
 
 $loader = require $autoloader;
-$loader->addPsr4('App\\', __DIR__ . '/../src/', true);
+$loader->setPsr4('App\\', [__DIR__ . '/../src/']);
+spl_autoload_unregister($appAutoloader);
+spl_autoload_register($appAutoloader, true, true);
 
 use Dotenv\Dotenv;
 use App\Core\Environment;
