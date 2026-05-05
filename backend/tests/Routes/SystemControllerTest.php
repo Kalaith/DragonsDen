@@ -1,4 +1,7 @@
 <?php
+
+namespace Tests\Routes;
+
 use PHPUnit\Framework\TestCase;
 use App\Controllers\SystemController;
 use App\Http\Request;
@@ -20,7 +23,6 @@ class SystemControllerTest extends TestCase
         $request = $this->makeRequest('GET', '/api/status');
         $response = new Response();
         $result = SystemController::status($request, $response);
-
         $this->assertStringContainsString('application/json', implode(' ', $result->getHeaders()));
     }
 }

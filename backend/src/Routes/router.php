@@ -23,16 +23,33 @@ return function (Router $router): void {
     $router->get($api . '/upgrade-definitions/{id}', [GameDataController::class, 'getUpgradeDefinition']);
 
     // Auth
+    $router->get($api . '/auth/login-info', [AuthController::class, 'loginInfo']);
     $router->get($api . '/auth/session', [AuthController::class, 'session'], [WebHatcheryJwtMiddleware::class]);
     $router->post($api . '/auth/guest-session', [AuthController::class, 'guestSession']);
     $router->post($api . '/auth/link-guest', [AuthController::class, 'linkGuest'], [WebHatcheryJwtMiddleware::class]);
 
     // Player Actions (protected)
     $router->get($api . '/player', [PlayerController::class, 'getPlayerData'], [WebHatcheryJwtMiddleware::class]);
-    $router->post($api . '/player/collect-gold', [PlayerController::class, 'collectGold'], [WebHatcheryJwtMiddleware::class]);
-    $router->post($api . '/player/send-minions', [PlayerController::class, 'sendMinions'], [WebHatcheryJwtMiddleware::class]);
-    $router->post($api . '/player/explore-ruins', [PlayerController::class, 'exploreRuins'], [WebHatcheryJwtMiddleware::class]);
-    $router->post($api . '/player/hire-goblin', [PlayerController::class, 'hireGoblin'], [WebHatcheryJwtMiddleware::class]);
+    $router->post(
+        $api . '/player/collect-gold',
+        [PlayerController::class, 'collectGold'],
+        [WebHatcheryJwtMiddleware::class]
+    );
+    $router->post(
+        $api . '/player/send-minions',
+        [PlayerController::class, 'sendMinions'],
+        [WebHatcheryJwtMiddleware::class]
+    );
+    $router->post(
+        $api . '/player/explore-ruins',
+        [PlayerController::class, 'exploreRuins'],
+        [WebHatcheryJwtMiddleware::class]
+    );
+    $router->post(
+        $api . '/player/hire-goblin',
+        [PlayerController::class, 'hireGoblin'],
+        [WebHatcheryJwtMiddleware::class]
+    );
     $router->post($api . '/player/prestige', [PlayerController::class, 'prestige'], [WebHatcheryJwtMiddleware::class]);
 
     // System

@@ -1,4 +1,5 @@
 <?php
+
 // src/Utils/IdleNumber.php
 namespace App\Utils;
 
@@ -9,7 +10,6 @@ class IdleNumber
 {
     public float $value;
     public int $exp;
-
     public function __construct($value = 0, $exp = 0)
     {
         $this->value = (float)$value;
@@ -46,10 +46,10 @@ class IdleNumber
     public function mul($factor): self
     {
         if ($factor instanceof IdleNumber) {
-            // Multiply two IdleNumber objects
+// Multiply two IdleNumber objects
             $result = new self($this->value * $factor->value, $this->exp + $factor->exp);
         } else {
-            // Multiply by a numeric value
+        // Multiply by a numeric value
             $result = new self($this->value * $factor, $this->exp);
         }
         $result->normalize();

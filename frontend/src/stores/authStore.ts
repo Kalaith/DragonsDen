@@ -61,6 +61,7 @@ export const getFrontpageToken = (): string | null => {
     const raw = window.localStorage.getItem(WEBHATCHERY_AUTH_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as PersistedAuthState;
+    if (parsed.state?.user?.is_guest) return null;
     return parsed.state?.token ?? null;
   } catch {
     return null;
@@ -84,13 +85,35 @@ export const clearGuestSession = (): void => {
   window.localStorage.removeItem(GUEST_AUTH_STORAGE_KEY);
 };
 
+export const persistLoginUrl = (loginUrl: string): void => {
+  const raw = window.localStorage.getItem(WEBHATCHERY_AUTH_STORAGE_KEY);
+  const parsed = raw ? (JSON.parse(raw) as PersistedAuthState) : {};
+  const state = parsed.state ?? {};
+  window.localStorage.setItem(
+    WEBHATCHERY_AUTH_STORAGE_KEY,
+    JSON.stringify({
+      ...parsed,
+      state: {
+        ...state,
+        loginUrl,
+      },
+    })
+  );
+  useAuthStore.setState({ loginUrl });
+};
+
 export const getActiveToken = (): string | null => {
+  const frontpageToken = getFrontpageToken();
+  if (frontpageToken) {
+    return frontpageToken;
+  }
+
   const guestSession = getGuestSession();
   if (guestSession?.token) {
     return guestSession.token;
   }
 
-  return getFrontpageToken();
+  return null;
 };
 
 const initialAuth = readPersistedAuth();

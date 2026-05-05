@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Middleware;
 
+use App\Core\Environment;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use App\Http\Response;
@@ -26,27 +29,22 @@ class WebHatcheryJwtMiddleware
         }
 
         $token = $matches[1];
-        $secret = $_ENV['JWT_SECRET']
-            ?? $_SERVER['JWT_SECRET']
-            ?? getenv('JWT_SECRET')
-            ?: '';
-        if ($secret === '') {
-            return $this->unauthorized($response, 'JWT secret not configured');
-        }
-
         try {
+            $secret = Environment::required('JWT_SECRET');
             $decoded = JWT::decode($token, new Key($secret, 'HS256'));
             $isGuest = (bool) ($decoded->is_guest ?? false);
 
-            $expectedIssuer = $_ENV['JWT_ISSUER'] ?? 'webhatchery';
-            if (!$isGuest && isset($decoded->iss) && $decoded->iss !== $expectedIssuer) {
+            $expectedIssuer = Environment::optional('JWT_ISSUER');
+            if (!$isGuest && $expectedIssuer !== null && isset($decoded->iss) && $decoded->iss !== $expectedIssuer) {
                 return $this->unauthorized($response, 'Invalid token issuer');
             }
 
-            $expectedAudience = $_ENV['JWT_AUDIENCE'] ?? ($_ENV['APP_URL'] ?? null);
+            $expectedAudience = Environment::optional('JWT_AUDIENCE');
             if (!$isGuest && $expectedAudience && isset($decoded->aud)) {
                 $aud = $decoded->aud;
-                $isValidAudience = is_array($aud) ? in_array($expectedAudience, $aud, true) : $aud === $expectedAudience;
+                $isValidAudience = is_array($aud)
+                    ? in_array($expectedAudience, $aud, true)
+                    : $aud === $expectedAudience;
                 if (!$isValidAudience) {
                     return $this->unauthorized($response, 'Invalid token audience');
                 }
@@ -69,19 +67,18 @@ class WebHatcheryJwtMiddleware
             ]);
 
             return $request;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->unauthorized($response, 'Invalid token');
         }
     }
 
     private function unauthorized(Response $response, string $message): Response
     {
-        $loginUrl = $_ENV['WEB_HATCHERY_LOGIN_URL'] ?? '';
         $payload = [
             'success' => false,
             'error' => 'Authentication required',
             'message' => $message,
-            'login_url' => $loginUrl
+            'login_url' => Environment::required('WEB_HATCHERY_LOGIN_URL')
         ];
         $response->getBody()->write(json_encode($payload));
         return $response

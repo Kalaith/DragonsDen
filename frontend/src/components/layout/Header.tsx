@@ -6,15 +6,11 @@ const Header: React.FC = () => {
   const { prestigeLevel, achievements } = useGameStore();
   const { user, authMode, loginUrl } = useAuthStore();
   const userLabel = user?.username || user?.email || (user?.id ? `User #${user.id}` : null);
-  const linkAccountUrl = (() => {
-    const baseLoginUrl = loginUrl || import.meta.env.VITE_WEB_HATCHERY_LOGIN_URL || '/login';
-    const url = new URL(baseLoginUrl, window.location.origin);
+  const linkAccountUrl = loginUrl ? (() => {
+    const url = new URL(loginUrl, window.location.origin);
     url.searchParams.set('return_to', window.location.href);
-    if (user?.is_guest && user.id) {
-      url.searchParams.set('guest_user_id', user.id);
-    }
     return url.toString();
-  })();
+  })() : null;
 
   return (
     <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gradient-to-r from-red-900 to-orange-800 text-white shadow-lg">
@@ -42,7 +38,7 @@ const Header: React.FC = () => {
           ) : (
             <span className="px-2 py-1 rounded bg-white/10">Not logged in</span>
           )}
-          {user?.is_guest ? (
+          {user?.is_guest && linkAccountUrl ? (
             <a href={linkAccountUrl} className="px-2 py-1 rounded bg-yellow-300 text-red-950 font-semibold">
               Link Account
             </a>

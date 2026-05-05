@@ -1,6 +1,7 @@
 {
     "name": "webhatchery/dragons-den-backend",
     "description": "PHP backend for Dragons Den incremental game",
+    "license": "proprietary",
     "type": "project",
     "require": {
         "php": "^8.1",
@@ -9,7 +10,7 @@
         "vlucas/phpdotenv": "^5.5",
         "monolog/monolog": "^3.4",
         "respect/validation": "^2.2",
-        "firebase/php-jwt": "^6.0",
+        "firebase/php-jwt": "^7.0",
         "guzzlehttp/guzzle": "^7.10"
     },
     "require-dev": {

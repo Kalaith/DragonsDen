@@ -1,111 +1,100 @@
 <?php
+
 // src/Actions/PlayerActions.php
+declare(strict_types=1);
+
 namespace App\Actions;
 
-use Illuminate\Database\Capsule\Manager as Capsule;
+use App\Repositories\PlayerRepository;
 use App\Utils\IdleNumber;
 
 class PlayerActions
 {
-    private static function getPlayerState()
+    private static function repository(): PlayerRepository
     {
-        $state = Capsule::table('player_state')->where('id', 1)->first();
-        if (!$state) {
-            // Create default player state
-            Capsule::table('player_state')->insert([
-                'id' => 1,
-                'gold_value' => '0',
-                'gold_exp' => 0,
-                'goblins_value' => '0', 
-                'goblins_exp' => 0
-            ]);
-            $state = Capsule::table('player_state')->where('id', 1)->first();
-        }
-        return $state;
+        return new PlayerRepository();
     }
 
-    private static function updatePlayerState($goldNumber, $goblinsNumber)
+    private static function getPlayerState(string $authUserId)
     {
-        Capsule::table('player_state')->where('id', 1)->update([
-            'gold_value' => $goldNumber->value,
-            'gold_exp' => $goldNumber->exp,
-            'goblins_value' => $goblinsNumber->value,
-            'goblins_exp' => $goblinsNumber->exp,
-            'updated_at' => date('Y-m-d H:i:s')
-        ]);
+        return self::repository()->loadOrCreateState($authUserId);
     }
 
-    public static function getPlayerData()
+    private static function updatePlayerState(
+        string $authUserId,
+        IdleNumber $goldNumber,
+        IdleNumber $goblinsNumber
+    ): void {
+        self::repository()->updateState($authUserId, $goldNumber, $goblinsNumber);
+    }
+
+    public static function getPlayerData(string $authUserId): array
     {
-        // Process any idle earnings first
-        self::processIdleEarnings();
-        
-        $state = self::getPlayerState();
+        self::processIdleEarnings($authUserId);
+
+        $state = self::getPlayerState($authUserId);
         $gold = new IdleNumber($state->gold_value, $state->gold_exp);
         $goblins = new IdleNumber($state->goblins_value, $state->goblins_exp);
-        
-        $achievements = Capsule::table('player_achievements')->pluck('achievement_id');
-        $treasures = Capsule::table('player_treasures')->pluck('treasure_id');
-        
+        $repository = self::repository();
+
         return [
             'gold' => $gold->toString(),
             'gold_display' => $gold->toDisplay(),
             'goblins' => $goblins->toString(),
             'goblins_display' => $goblins->toDisplay(),
-            'achievements' => $achievements->toArray(),
-            'treasures' => $treasures->toArray(),
+            'achievements' => $repository->listAchievementIds($authUserId),
+            'treasures' => $repository->listTreasureIds($authUserId),
             'last_updated' => $state->updated_at,
             'server_time' => time()
         ];
     }
 
-    public static function processIdleEarnings()
+    public static function processIdleEarnings(string $authUserId): void
     {
-        $state = self::getPlayerState();
+        $state = self::getPlayerState($authUserId);
         $lastUpdated = strtotime($state->updated_at ?? 'now');
         $now = time();
         $secondsOffline = $now - $lastUpdated;
-        
+
         if ($secondsOffline > 0) {
             $gold = new IdleNumber($state->gold_value, $state->gold_exp);
             $goblins = new IdleNumber($state->goblins_value, $state->goblins_exp);
-            
+
             // Base gold per second (1 gold/sec)
             $goldPerSecond = new IdleNumber(1, 0);
-            
+
             // Additional gold from goblins (each goblin adds 0.1 gold/sec)
             if ($goblins->value > 0) {
                 $goblinGoldPerSecond = $goblins->mul(new IdleNumber(0.1, 0));
                 $goldPerSecond = $goldPerSecond->add($goblinGoldPerSecond);
             }
-            
+
             // Calculate total idle earnings
             $idleEarnings = $goldPerSecond->mul(new IdleNumber($secondsOffline, 0));
             $gold = $gold->add($idleEarnings);
-            
+
             // Update state
-            self::updatePlayerState($gold, $goblins);
+            self::updatePlayerState($authUserId, $gold, $goblins);
         }
     }
 
-    public static function collectGold($amount = null)
+    public static function collectGold(string $authUserId): array
     {
-        // Process idle earnings first
-        self::processIdleEarnings();
-        
-        $state = self::getPlayerState();
+        self::processIdleEarnings($authUserId);
+
+        $state = self::getPlayerState($authUserId);
         $gold = new IdleNumber($state->gold_value, $state->gold_exp);
         $goblins = new IdleNumber($state->goblins_value, $state->goblins_exp);
-        
+
         // Server determines click value, not client (prevent cheating)
         $baseGoldPerClick = 1;
         $goldToAdd = new IdleNumber($baseGoldPerClick, 0);
-        
+
         $gold = $gold->add($goldToAdd);
-        
-        self::updatePlayerState($gold, $goblins);
-        self::checkAchievements();
-        
+
+        self::updatePlayerState($authUserId, $gold, $goblins);
+        self::checkAchievements($authUserId);
+
         return [
             'success' => true,
             'new_gold_amount' => $gold->toString(),
@@ -114,22 +103,22 @@ class PlayerActions
         ];
     }
 
-    public static function sendMinions()
+    public static function sendMinions(string $authUserId): array
     {
-        $state = self::getPlayerState();
+        $state = self::getPlayerState($authUserId);
         $gold = new IdleNumber($state->gold_value, $state->gold_exp);
         $goblins = new IdleNumber($state->goblins_value, $state->goblins_exp);
-        
+
         if ($goblins->value <= 0) {
             return ['success' => false, 'error' => 'No goblins to send'];
         }
-        
+
         // Goblins collect gold based on their count
         $goldFromGoblins = $goblins->mul(2); // Each goblin collects 2 gold
         $gold = $gold->add($goldFromGoblins);
-        
-        self::updatePlayerState($gold, $goblins);
-        
+
+        self::updatePlayerState($authUserId, $gold, $goblins);
+
         return [
             'success' => true,
             'gold_earned' => $goldFromGoblins->toString(),
@@ -138,29 +127,30 @@ class PlayerActions
         ];
     }
 
-    public static function exploreRuins()
-    {
+    public static function exploreRuins(
+        string $authUserId,
+        ?string $ruinId = null,
+        ?string $explorationType = null
+    ): array {
+        if ($ruinId === null || $explorationType === null) {
+            return ['success' => false, 'error' => 'Missing required parameters'];
+        }
+
+        $repository = self::repository();
+        if (!$repository->ruinExists($ruinId)) {
+            return ['success' => false, 'error' => 'Ruin not found'];
+        }
+
         $treasureChance = 0.3; // 30% chance
         $foundTreasure = rand(1, 100) <= ($treasureChance * 100);
-        
+
         if ($foundTreasure) {
-            // Get random treasure that player doesn't have
-            $allTreasures = Capsule::table('treasures')->pluck('id');
-            $playerTreasures = Capsule::table('player_treasures')->pluck('treasure_id');
-            $availableTreasures = $allTreasures->diff($playerTreasures);
-            
-            if ($availableTreasures->count() > 0) {
-                $treasureId = $availableTreasures->random();
-                $treasure = Capsule::table('treasures')->where('id', $treasureId)->first();
-                
-                // Add to player treasures
-                Capsule::table('player_treasures')->insert([
-                    'treasure_id' => $treasureId,
-                    'collected_at' => date('Y-m-d H:i:s')
-                ]);
-                
-                self::checkAchievements();
-                
+            $treasureId = $repository->pickAvailableTreasureId($authUserId);
+            if ($treasureId !== null) {
+                $treasure = $repository->getTreasure($treasureId);
+                $repository->addTreasure($authUserId, $treasureId);
+                self::checkAchievements($authUserId);
+
                 return [
                     'success' => true,
                     'treasure_found' => true,
@@ -168,36 +158,36 @@ class PlayerActions
                 ];
             }
         }
-        
+
         return [
             'success' => true,
             'treasure_found' => false
         ];
     }
 
-    public static function hireGoblin()
+    public static function hireGoblin(string $authUserId): array
     {
-        $state = self::getPlayerState();
+        $state = self::getPlayerState($authUserId);
         $gold = new IdleNumber($state->gold_value, $state->gold_exp);
         $goblins = new IdleNumber($state->goblins_value, $state->goblins_exp);
-        
+
         // Calculate cost: base 50 * 1.2^current_goblins
         $baseCost = 50;
         $multiplier = 1.2;
         $cost = new IdleNumber($baseCost * pow($multiplier, $goblins->value), 0);
-        
+
         // Check if player has enough gold (simplified comparison)
         if ($gold->exp < $cost->exp || ($gold->exp == $cost->exp && $gold->value < $cost->value)) {
             return ['success' => false, 'error' => 'Not enough gold'];
         }
-        
+
         // Subtract cost and add goblin
         $gold = new IdleNumber($gold->value - $cost->value, $gold->exp);
         $goblins = $goblins->add(new IdleNumber(1, 0));
-        
-        self::updatePlayerState($gold, $goblins);
-        self::checkAchievements();
-        
+
+        self::updatePlayerState($authUserId, $gold, $goblins);
+        self::checkAchievements($authUserId);
+
         return [
             'success' => true,
             'cost' => $cost->toString(),
@@ -206,77 +196,73 @@ class PlayerActions
         ];
     }
 
-    public static function prestige()
+    public static function prestige(string $authUserId): array
     {
-        $state = self::getPlayerState();
+        $state = self::getPlayerState($authUserId);
         $gold = new IdleNumber($state->gold_value, $state->gold_exp);
-        
+
         // Check if player has enough gold (1M requirement)
         $requirement = new IdleNumber(1000000, 0);
         if ($gold->exp < $requirement->exp || ($gold->exp == $requirement->exp && $gold->value < $requirement->value)) {
             return ['success' => false, 'error' => 'Not enough gold for prestige'];
         }
-        
+
         // Reset progress but keep achievements and treasures
         $newGold = new IdleNumber(0, 0);
         $newGoblins = new IdleNumber(0, 0);
-        
-        self::updatePlayerState($newGold, $newGoblins);
-        self::checkAchievements();
-        
+
+        self::updatePlayerState($authUserId, $newGold, $newGoblins);
+        self::checkAchievements($authUserId);
+
         return [
             'success' => true,
             'message' => 'Prestige completed! Progress reset with permanent bonuses.'
         ];
     }
 
-    private static function checkAchievements()
+    private static function checkAchievements(string $authUserId): array
     {
-        $state = self::getPlayerState();
+        $state = self::getPlayerState($authUserId);
         $gold = new IdleNumber($state->gold_value, $state->gold_exp);
         $goblins = new IdleNumber($state->goblins_value, $state->goblins_exp);
-        
+        $repository = self::repository();
+
         $newAchievements = [];
-        
+
         // Check first click achievement
-        if (!Capsule::table('player_achievements')->where('achievement_id', 'first_click')->exists()) {
-            Capsule::table('player_achievements')->insert([
-                'achievement_id' => 'first_click',
-                'unlocked_at' => date('Y-m-d H:i:s')
-            ]);
+        if (!$repository->achievementExists($authUserId, 'first_click')) {
+            $repository->addAchievement($authUserId, 'first_click');
             $newAchievements[] = 'first_click';
         }
-        
+
         // Check treasure hunter achievement
-        $treasureCount = Capsule::table('player_treasures')->count();
-        if ($treasureCount > 0 && !Capsule::table('player_achievements')->where('achievement_id', 'treasure_hunter')->exists()) {
-            Capsule::table('player_achievements')->insert([
-                'achievement_id' => 'treasure_hunter',
-                'unlocked_at' => date('Y-m-d H:i:s')
-            ]);
+        if (
+            $repository->treasureCount($authUserId) > 0
+            && !$repository->achievementExists($authUserId, 'treasure_hunter')
+        ) {
+            $repository->addAchievement($authUserId, 'treasure_hunter');
             $newAchievements[] = 'treasure_hunter';
         }
-        
+
         // Check golden collector achievement (10,000 gold)
         $tenThousand = new IdleNumber(10000, 0);
-        if (($gold->exp > $tenThousand->exp || ($gold->exp == $tenThousand->exp && $gold->value >= $tenThousand->value)) &&
-            !Capsule::table('player_achievements')->where('achievement_id', 'golden_collector')->exists()) {
-            Capsule::table('player_achievements')->insert([
-                'achievement_id' => 'golden_collector',
-                'unlocked_at' => date('Y-m-d H:i:s')
-            ]);
+        if (
+            (
+                $gold->exp > $tenThousand->exp
+                || ($gold->exp == $tenThousand->exp && $gold->value >= $tenThousand->value)
+            )
+            && !$repository->achievementExists($authUserId, 'golden_collector')
+        ) {
+            $repository->addAchievement($authUserId, 'golden_collector');
             $newAchievements[] = 'golden_collector';
         }
-        
+
         // Check minion master achievement (10 goblins)
-        if ($goblins->value >= 10 && !Capsule::table('player_achievements')->where('achievement_id', 'minion_master')->exists()) {
-            Capsule::table('player_achievements')->insert([
-                'achievement_id' => 'minion_master',
-                'unlocked_at' => date('Y-m-d H:i:s')
-            ]);
+        if ($goblins->value >= 10 && !$repository->achievementExists($authUserId, 'minion_master')) {
+            $repository->addAchievement($authUserId, 'minion_master');
             $newAchievements[] = 'minion_master';
         }
-        
+
         return $newAchievements;
     }
 }

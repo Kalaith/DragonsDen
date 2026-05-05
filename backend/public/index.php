@@ -38,6 +38,7 @@ $loader = require $autoloader;
 $loader->addPsr4('App\\', __DIR__ . '/../src/', true);
 
 use Dotenv\Dotenv;
+use App\Core\Environment;
 use App\Core\Router;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
@@ -49,14 +50,17 @@ if (!file_exists($dotenvPath . '/.env')) {
 $dotenv = Dotenv::createImmutable($dotenvPath);
 $dotenv->load();
 
+Environment::required('JWT_SECRET');
+Environment::required('WEB_HATCHERY_LOGIN_URL');
+
 // Initialize database connection
 $capsule = new Capsule;
 $capsule->addConnection([
     'driver'    => 'mysql',
-    'host'      => $_ENV['DB_HOST'] ?? 'localhost',
-    'database'  => $_ENV['DB_NAME'] ?? 'dragons_den',
-    'username'  => $_ENV['DB_USER'] ?? 'root',
-    'password'  => $_ENV['DB_PASSWORD'] ?? '',
+    'host'      => Environment::required('DB_HOST'),
+    'database'  => Environment::required('DB_NAME'),
+    'username'  => Environment::required('DB_USER'),
+    'password'  => Environment::required('DB_PASSWORD'),
     'charset'   => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'prefix'    => '',
@@ -69,8 +73,9 @@ $capsule->bootEloquent();
 $router = new Router();
 
 // Set base path for subdirectory deployment
-if (isset($_ENV['APP_BASE_PATH']) && $_ENV['APP_BASE_PATH']) {
-    $router->setBasePath(rtrim($_ENV['APP_BASE_PATH'], '/'));
+$configuredBasePath = Environment::optional('APP_BASE_PATH');
+if ($configuredBasePath !== null) {
+    $router->setBasePath(rtrim($configuredBasePath, '/'));
 } else {
     $requestPath = $_SERVER['REQUEST_URI'] ?? '';
     $requestPath = parse_url($requestPath, PHP_URL_PATH) ?? '';

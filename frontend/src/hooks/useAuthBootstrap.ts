@@ -1,49 +1,38 @@
 import { useCallback } from 'react';
-import { apiConfig } from '../config/api';
-import { saveGuestSession, useAuthStore } from '../stores/authStore';
+import { AuthUser, saveGuestSession, useAuthStore } from '../stores/authStore';
+import { apiClient } from '../api/ApiClient';
 
 export const useAuthBootstrap = () => {
-  const { loginUrl, user } = useAuthStore();
+  const { loginUrl } = useAuthStore();
 
   const continueAsGuest = useCallback(async () => {
-    const response = await fetch(`${apiConfig.BACKEND_BASE_URL}/auth/guest-session`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const payload = (await response.json()) as {
-      data?: { token?: string; user?: unknown };
-    };
-
-    if (!response.ok || !payload.data?.token || !payload.data?.user) {
+    const payload = await apiClient.createGuestSession();
+    if (!payload.data?.token || !payload.data?.user) {
       throw new Error('Failed to create guest session');
     }
 
     saveGuestSession({
       token: payload.data.token,
-      user: payload.data.user as never,
+      user: payload.data.user as AuthUser,
     });
 
     useAuthStore.setState({
-      user: payload.data.user as never,
+      user: payload.data.user as AuthUser,
       token: payload.data.token,
       authMode: 'guest',
     });
   }, []);
 
   const getLinkAccountUrl = useCallback(() => {
-    const baseLoginUrl = loginUrl || import.meta.env.VITE_WEB_HATCHERY_LOGIN_URL || '/login';
-    const url = new URL(baseLoginUrl, window.location.origin);
-    url.searchParams.set('return_to', window.location.href);
-
-    if (user?.is_guest && user.id) {
-      url.searchParams.set('guest_user_id', user.id);
+    if (!loginUrl) {
+      throw new Error('Login URL is not configured');
     }
 
+    const url = new URL(loginUrl, window.location.origin);
+    url.searchParams.set('return_to', window.location.href);
+
     return url.toString();
-  }, [loginUrl, user]);
+  }, [loginUrl]);
 
   return {
     continueAsGuest,

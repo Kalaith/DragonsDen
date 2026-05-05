@@ -43,9 +43,10 @@ CREATE TABLE IF NOT EXISTS upgrade_definitions (
   baseEffect TEXT NOT NULL
 );
 
--- Table for player state (single player for now, supports huge numbers)
+-- Table for player state (owned by WebHatchery or guest auth user, supports huge numbers)
 CREATE TABLE IF NOT EXISTS player_state (
-  id INT PRIMARY KEY DEFAULT 1,
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  auth_user_id VARCHAR(191) NOT NULL UNIQUE,
   gold_value VARCHAR(32) NOT NULL DEFAULT '0',      -- significand, e.g. '1.23'
   gold_exp INT NOT NULL DEFAULT 0,                 -- exponent, e.g. 1000
   goblins_value VARCHAR(32) NOT NULL DEFAULT '0',
@@ -54,16 +55,20 @@ CREATE TABLE IF NOT EXISTS player_state (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Table for unlocked achievements (single player)
+-- Table for unlocked achievements
 CREATE TABLE IF NOT EXISTS player_achievements (
-  achievement_id VARCHAR(64) PRIMARY KEY,
+  auth_user_id VARCHAR(191) NOT NULL,
+  achievement_id VARCHAR(64) NOT NULL,
   unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (auth_user_id, achievement_id),
   FOREIGN KEY (achievement_id) REFERENCES achievements(id) ON DELETE CASCADE
 );
 
--- Table for collected treasures/relics (single player)
+-- Table for collected treasures/relics
 CREATE TABLE IF NOT EXISTS player_treasures (
-  treasure_id VARCHAR(64) PRIMARY KEY,
+  auth_user_id VARCHAR(191) NOT NULL,
+  treasure_id VARCHAR(64) NOT NULL,
   collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (auth_user_id, treasure_id),
   FOREIGN KEY (treasure_id) REFERENCES treasures(id) ON DELETE CASCADE
 );

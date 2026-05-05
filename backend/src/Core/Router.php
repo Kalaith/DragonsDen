@@ -18,7 +18,8 @@ final class Router
 
     public function __construct(
         private readonly ?ContainerInterface $container = null
-    ) {}
+    ) {
+    }
 
     public function setBasePath(string $basePath): void
     {
@@ -105,7 +106,7 @@ final class Router
                 try {
                     $response = $this->invokeHandler($route['handler'], $request, $response, $routeParams);
                 } catch (Throwable $e) {
-                    $debug = ($_ENV['APP_DEBUG'] ?? 'false') === 'true';
+                    $debug = Environment::optional('APP_DEBUG') === 'true';
                     $payload = [
                         'success' => false,
                         'error' => 'Internal server error'
@@ -171,8 +172,12 @@ final class Router
         );
     }
 
-    private function invokeHandler(array|callable $handler, Request $request, Response $response, array $routeParams): Response
-    {
+    private function invokeHandler(
+        array|callable $handler,
+        Request $request,
+        Response $response,
+        array $routeParams
+    ): Response {
         if (is_callable($handler)) {
             $result = $handler($request, $response, $routeParams);
             return $result instanceof Response ? $result : $response;

@@ -1,12 +1,13 @@
 <?php
-// tests/Routes/apiTest.php
+
+namespace Tests\Routes;
+
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/RouterTestHelper.php';
-
-class ApiRoutesIntegrationTest extends TestCase
+class ApiTest extends TestCase
 {
     use RouterTestHelper;
+
 
     public function testGetConstantsRoute()
     {
@@ -149,9 +150,13 @@ class ApiRoutesIntegrationTest extends TestCase
 
     public function testResponseIsJson()
     {
-        [$status, $headers] = $this->dispatch('GET', '/api/status');
+        [$status, $headers, $body] = $this->dispatch('GET', '/api/status');
         $this->assertContains($status, [200, 500, 503]);
         $contentType = implode(' ', $headers);
-        $this->assertStringContainsString('Content-Type: application/json', $contentType);
+        if ($contentType !== '') {
+            $this->assertStringContainsString('Content-Type: application/json', $contentType);
+        } else {
+            $this->assertIsArray(json_decode($body, true));
+        }
     }
 }

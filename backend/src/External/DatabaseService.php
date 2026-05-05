@@ -1,20 +1,24 @@
 <?php
+
 // src/External/DatabaseService.php
+declare(strict_types=1);
+
 namespace App\External;
 
+use App\Core\Environment;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 class DatabaseService
 {
     public function __construct()
     {
-        $capsule = new Capsule;
+        $capsule = new Capsule();
         $capsule->addConnection([
             'driver'    => 'mysql',
-            'host'      => $_ENV['DB_HOST'] ?? 'localhost',
-            'database'  => $_ENV['DB_NAME'] ?? 'dragons_den',
-            'username'  => $_ENV['DB_USER'] ?? 'root',
-            'password'  => $_ENV['DB_PASSWORD'] ?? '',
+            'host'      => Environment::required('DB_HOST'),
+            'database'  => Environment::required('DB_NAME'),
+            'username'  => Environment::required('DB_USER'),
+            'password'  => Environment::required('DB_PASSWORD'),
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',

@@ -6,6 +6,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
+use App\Core\Environment;
 
 // Load environment variables
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
@@ -22,11 +23,11 @@ if ($envPath && file_exists($envPath)) {
 // --- Ensure database exists ---
 try {
     $pdo = new PDO(
-        'mysql:host=' . ($_ENV['DB_HOST'] ?? '127.0.0.1'),
-        $_ENV['DB_USER'] ?? 'root',
-        $_ENV['DB_PASSWORD'] ?? ''
+        'mysql:host=' . Environment::required('DB_HOST'),
+        Environment::required('DB_USER'),
+        Environment::required('DB_PASSWORD')
     );
-    $dbName = $_ENV['DB_NAME'] ?? 'dragons_den';
+    $dbName = Environment::required('DB_NAME');
     // Drop if exists
     $pdo->exec("DROP DATABASE IF EXISTS `$dbName`");
     echo "✓ Dropped database if it existed: $dbName\n";
@@ -41,11 +42,11 @@ try {
 // === Capsule/Eloquent Setup ===
 $capsule = new Capsule;
 $capsule->addConnection([
-    'driver'    => $_ENV['DB_CONNECTION'] ?? 'mysql',
-    'host'      => $_ENV['DB_HOST'] ?? '127.0.0.1',
-    'database'  => $_ENV['DB_NAME'] ?? 'dragons_den',
-    'username'  => $_ENV['DB_USER'] ?? 'root',
-    'password'  => $_ENV['DB_PASSWORD'] ?? '',
+    'driver'    => 'mysql',
+    'host'      => Environment::required('DB_HOST'),
+    'database'  => Environment::required('DB_NAME'),
+    'username'  => Environment::required('DB_USER'),
+    'password'  => Environment::required('DB_PASSWORD'),
     'charset'   => 'utf8',
     'collation' => 'utf8_unicode_ci',
     'prefix'    => '',
@@ -58,9 +59,9 @@ $initSqlPath = realpath(__DIR__ . '/../initData/init.sql');
 if ($initSqlPath && file_exists($initSqlPath)) {
     try {
         $pdo = new PDO(
-            'mysql:host=' . ($_ENV['DB_HOST'] ?? '127.0.0.1') . ';dbname=' . ($_ENV['DB_NAME'] ?? 'dragons_den'),
-            $_ENV['DB_USER'] ?? 'root',
-            $_ENV['DB_PASSWORD'] ?? ''
+            'mysql:host=' . Environment::required('DB_HOST') . ';dbname=' . Environment::required('DB_NAME'),
+            Environment::required('DB_USER'),
+            Environment::required('DB_PASSWORD')
         );
         $sql = file_get_contents($initSqlPath);
         $pdo->exec($sql);

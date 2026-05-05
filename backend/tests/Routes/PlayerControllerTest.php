@@ -1,4 +1,7 @@
 <?php
+
+namespace Tests\Routes;
+
 use PHPUnit\Framework\TestCase;
 use App\Controllers\PlayerController;
 use App\Http\Request;
@@ -21,7 +24,6 @@ class PlayerControllerTest extends TestCase
         $request = $this->makeRequest('POST', '/api/player/explore-ruins', []);
         $response = new Response();
         $result = PlayerController::exploreRuins($request, $response);
-
         $this->assertEquals(400, $result->getStatusCode());
     }
 }

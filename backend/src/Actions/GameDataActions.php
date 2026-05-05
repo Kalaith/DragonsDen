@@ -1,4 +1,5 @@
 <?php
+
 // src/Actions/GameDataActions.php
 namespace App\Actions;
 
@@ -34,7 +35,9 @@ class GameDataActions
     public static function getConstant($key)
     {
         $row = Capsule::table('game_constants')->where('key', $key)->first();
-        if (!$row) return null;
+        if (!$row) {
+            return null;
+        }
         return json_decode($row->value, true) ?? $row->value;
     }
     public static function getAchievement($id)

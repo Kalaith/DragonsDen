@@ -1,4 +1,5 @@
 <?php
+
 // src/Controllers/GameDataController.php
 namespace App\Controllers;
 
@@ -10,33 +11,27 @@ class GameDataController
 {
     public static function getConstants(Request $request, Response $response): Response
     {
-        $data = GameDataActions::getConstants();
-        $response->getBody()->write(json_encode($data));
-        return $response->withHeader('Content-Type', 'application/json');
+        return self::writeActionResponse($response, fn () => GameDataActions::getConstants());
     }
     public static function getAchievements(Request $request, Response $response): Response
     {
-        $data = GameDataActions::getAchievements();
-        $response->getBody()->write(json_encode($data));
-        return $response->withHeader('Content-Type', 'application/json');
+
+        return self::writeActionResponse($response, fn () => GameDataActions::getAchievements());
     }
     public static function getTreasures(Request $request, Response $response): Response
     {
-        $data = GameDataActions::getTreasures();
-        $response->getBody()->write(json_encode($data));
-        return $response->withHeader('Content-Type', 'application/json');
+
+        return self::writeActionResponse($response, fn () => GameDataActions::getTreasures());
     }
     public static function getUpgrades(Request $request, Response $response): Response
     {
-        $data = GameDataActions::getUpgrades();
-        $response->getBody()->write(json_encode($data));
-        return $response->withHeader('Content-Type', 'application/json');
+
+        return self::writeActionResponse($response, fn () => GameDataActions::getUpgrades());
     }
     public static function getUpgradeDefinitions(Request $request, Response $response): Response
     {
-        $data = GameDataActions::getUpgradeDefinitions();
-        $response->getBody()->write(json_encode($data));
-        return $response->withHeader('Content-Type', 'application/json');
+
+        return self::writeActionResponse($response, fn () => GameDataActions::getUpgradeDefinitions());
     }
     public static function getConstant(Request $request, Response $response, $args): Response
     {
@@ -102,5 +97,24 @@ class GameDataController
             $response->getBody()->write(json_encode($data));
         }
         return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    private static function writeActionResponse(Response $response, callable $action): Response
+    {
+
+        try {
+            $payload = $action();
+            $status = 200;
+        } catch (\Throwable $exception) {
+            $payload = [
+                'success' => false,
+                'error' => 'Database unavailable',
+                'message' => $exception->getMessage(),
+            ];
+            $status = 500;
+        }
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withStatus($status)->withHeader('Content-Type', 'application/json');
     }
 }

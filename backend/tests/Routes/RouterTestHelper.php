@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\Routes;
+
 use App\Core\Router;
 
 trait RouterTestHelper

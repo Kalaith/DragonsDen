@@ -91,10 +91,11 @@ try {
         echo "✓ upgrade_definitions table already exists\n";
     }
 
-    // Player State (supports huge numbers)
+// Player State (supports huge numbers)
     if (!Capsule::schema()->hasTable('player_state')) {
         Capsule::schema()->create('player_state', function (Blueprint $table) {
-            $table->integer('id')->primary()->default(1);
+            $table->increments('id');
+            $table->string('auth_user_id', 191)->unique();
             $table->string('gold_value', 32)->default('0');
             $table->integer('gold_exp')->default(0);
             $table->string('goblins_value', 32)->default('0');
@@ -109,8 +110,10 @@ try {
     // Player Achievements
     if (!Capsule::schema()->hasTable('player_achievements')) {
         Capsule::schema()->create('player_achievements', function (Blueprint $table) {
-            $table->string('achievement_id', 64)->primary();
+            $table->string('auth_user_id', 191);
+            $table->string('achievement_id', 64);
             $table->timestamp('unlocked_at')->useCurrent();
+            $table->primary(['auth_user_id', 'achievement_id']);
         });
         echo "✓ Created player_achievements table\n";
     } else {
@@ -120,8 +123,10 @@ try {
     // Player Treasures
     if (!Capsule::schema()->hasTable('player_treasures')) {
         Capsule::schema()->create('player_treasures', function (Blueprint $table) {
-            $table->string('treasure_id', 64)->primary();
+            $table->string('auth_user_id', 191);
+            $table->string('treasure_id', 64);
             $table->timestamp('collected_at')->useCurrent();
+            $table->primary(['auth_user_id', 'treasure_id']);
         });
         echo "✓ Created player_treasures table\n";
     } else {
@@ -168,23 +173,6 @@ try {
     seedTableFromJson('treasures', "$backendDir/treasures.json", 'id');
     seedTableFromJson('upgrades', "$backendDir/upgrades.json", 'id');
     seedTableFromJson('upgrade_definitions', "$backendDir/upgrade_definitions.json", 'id');
-
-    // Initialize default player state
-    $playerExists = Capsule::table('player_state')->where('id', 1)->first();
-    if (!$playerExists) {
-        Capsule::table('player_state')->insert([
-            'id' => 1,
-            'gold_value' => '0',
-            'gold_exp' => 0,
-            'goblins_value' => '0',
-            'goblins_exp' => 0,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
-        ]);
-        echo "✓ Created default player state\n";
-    } else {
-        echo "✓ Default player state already exists\n";
-    }
 
     echo "\n✅ dragons_den database initialization completed successfully!\n";
     echo "Backend server can now be started with: composer start\n";

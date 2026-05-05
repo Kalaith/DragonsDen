@@ -1,4 +1,5 @@
 <?php
+
 // src/Utils/Logger.php
 namespace App\Utils;
 

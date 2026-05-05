@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useAuthStore, clearGuestSession, getFrontpageToken, getGuestSession, saveGuestSession } from '../stores/authStore';
-import { apiConfig } from '../config/api';
+import { AuthUser, useAuthStore, clearGuestSession, getFrontpageToken, getGuestSession, saveGuestSession } from '../stores/authStore';
+import { apiClient } from '../api/ApiClient';
 
 export const useAuthSession = () => {
   const setState = useAuthStore.setState;
@@ -8,49 +8,36 @@ export const useAuthSession = () => {
   useEffect(() => {
     const bootstrap = async () => {
       try {
-        const params = new URLSearchParams(window.location.search);
-        const requestedGuestLink = params.get('guest_user_id');
-        const frontpageToken = getFrontpageToken();
+        const loginInfo = await apiClient.getLoginInfo();
+        if (loginInfo.data?.login_url) {
+          setState({ loginUrl: loginInfo.data.login_url });
+        }
 
-        if (requestedGuestLink && frontpageToken) {
-          const linkResponse = await fetch(`${apiConfig.BACKEND_BASE_URL}/auth/link-guest`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${frontpageToken}`,
-            },
-            body: JSON.stringify({ guest_user_id: requestedGuestLink }),
-          });
-          const linkPayload = (await linkResponse.json()) as { data?: { user?: unknown } };
-          if (linkResponse.ok && linkPayload.data?.user) {
+        const frontpageToken = getFrontpageToken();
+        const guestSession = getGuestSession();
+
+        if (frontpageToken && guestSession?.token) {
+          const linkPayload = await apiClient.linkGuestAccount(guestSession.token);
+          if (linkPayload.data?.user) {
             clearGuestSession();
             setState({
-              user: linkPayload.data.user as never,
+              user: linkPayload.data.user as AuthUser,
               token: frontpageToken,
               authMode: 'frontpage',
             });
-            params.delete('guest_user_id');
-            const nextQuery = params.toString();
-            window.history.replaceState({}, document.title, `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`);
             return;
           }
         }
 
-        const guestSession = getGuestSession();
         if (guestSession?.token) {
-          const response = await fetch(`${apiConfig.BACKEND_BASE_URL}/auth/session`, {
-            headers: {
-              Authorization: `Bearer ${guestSession.token}`,
-            },
-          });
-          const payload = (await response.json()) as { data?: { user?: unknown } };
-          if (response.ok && payload.data?.user) {
+          const payload = await apiClient.getSession();
+          if (payload.data?.user) {
             saveGuestSession({
               token: guestSession.token,
-              user: payload.data.user as never,
+              user: payload.data.user as AuthUser,
             });
             setState({
-              user: payload.data.user as never,
+              user: payload.data.user as AuthUser,
               token: guestSession.token,
               authMode: 'guest',
             });
@@ -59,15 +46,10 @@ export const useAuthSession = () => {
         }
 
         if (frontpageToken) {
-          const response = await fetch(`${apiConfig.BACKEND_BASE_URL}/auth/session`, {
-            headers: {
-              Authorization: `Bearer ${frontpageToken}`,
-            },
-          });
-          const payload = (await response.json()) as { data?: { user?: unknown } };
-          if (response.ok && payload.data?.user) {
+          const payload = await apiClient.getSession();
+          if (payload.data?.user) {
             setState({
-              user: payload.data.user as never,
+              user: payload.data.user as AuthUser,
               token: frontpageToken,
               authMode: 'frontpage',
             });

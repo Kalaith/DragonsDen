@@ -23,5 +23,7 @@
         <env name="DB_NAME" value="dragons_den"/>
         <env name="DB_USER" value="root"/>
         <env name="DB_PASSWORD" value="c$t@Q5N^QRi8aa"/>
+        <env name="JWT_SECRET" value="test-secret"/>
+        <env name="WEB_HATCHERY_LOGIN_URL" value="https://webhatchery.test/login"/>
     </php>
 </phpunit>

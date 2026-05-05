@@ -1,4 +1,7 @@
 <?php
+
+namespace Tests\Routes;
+
 use PHPUnit\Framework\TestCase;
 use App\Controllers\GameDataController;
 use App\Http\Request;
@@ -21,7 +24,6 @@ class GameDataControllerTest extends TestCase
         $request = $this->makeRequest('GET', '/api/constants');
         $response = new Response();
         $result = GameDataController::getConstants($request, $response);
-
         $this->assertInstanceOf(Response::class, $result);
         $this->assertStringContainsString('application/json', implode(' ', $result->getHeaders()));
     }
@@ -31,7 +33,6 @@ class GameDataControllerTest extends TestCase
         $request = $this->makeRequest('GET', '/api/constants/');
         $response = new Response();
         $result = GameDataController::getConstant($request, $response, []);
-
         $this->assertEquals(400, $result->getStatusCode());
     }
 }
